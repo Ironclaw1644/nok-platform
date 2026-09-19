@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { NokMark } from "@/components/marketing/nok-chrome";
+import { AiIntake } from "@/components/product/ai-intake";
 import { AskPanel } from "@/components/product/ask-panel";
+import { ConflictScan } from "@/components/product/conflict-scan";
+import { DemoSession, DemoSetupPrompt } from "@/components/product/demo-session";
 import { MembersPanel } from "@/components/product/members-panel";
 import { ReadinessInstrument } from "@/components/product/readiness-instrument";
 import { RecordTable } from "@/components/product/record-table";
-import { Badge, Dot } from "@/components/ui/kit";
 import { DEMO_CONSUMER_RECORDS, DEMO_FAMILY } from "@/lib/domain/demo";
 
 export const metadata: Metadata = { title: "The Vance family record" };
@@ -18,10 +20,7 @@ export default function FamilyRecordPage() {
           <Link href="/">
             <NokMark />
           </Link>
-          <Badge tone="warn">
-            <Dot tone="warn" pulse />
-            Demo data
-          </Badge>
+          <DemoSession />
         </div>
       </header>
 
@@ -38,11 +37,13 @@ export default function FamilyRecordPage() {
           </p>
         </div>
 
+        <DemoSetupPrompt />
         {/* min-w-0: grid items default to min-width:auto and would otherwise be
             forced wider than the viewport by a long record row. */}
         <div className="grid gap-5 lg:grid-cols-[1.3fr_1fr] lg:items-start">
           <div className="min-w-0 space-y-5">
             <RecordTable records={DEMO_CONSUMER_RECORDS} />
+            <ConflictScan records={DEMO_CONSUMER_RECORDS} members={DEMO_FAMILY} />
           </div>
           <div className="min-w-0 space-y-5">
             <ReadinessInstrument
@@ -51,6 +52,7 @@ export default function FamilyRecordPage() {
               register="family"
             />
             <AskPanel records={DEMO_CONSUMER_RECORDS} members={DEMO_FAMILY} />
+            <AiIntake />
             <MembersPanel members={DEMO_FAMILY} />
           </div>
         </div>

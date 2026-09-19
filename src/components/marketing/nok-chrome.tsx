@@ -59,8 +59,8 @@ export function NokNav() {
 
         <div className="flex items-center gap-3">
           <VersionSwitch current="/" />
-          <ButtonLink href="/app" size="sm">
-            See the record
+          <ButtonLink href="/start" size="sm">
+            Set up
           </ButtonLink>
         </div>
       </div>

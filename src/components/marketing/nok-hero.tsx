@@ -55,12 +55,12 @@ export function NokHero() {
           <Reveal delay={0.7} y={14}>
             <div className="mt-9 flex flex-wrap items-center gap-3">
               <Magnetic>
-                <ButtonLink href="/app" size="lg">
-                  See what a record looks like
+                <ButtonLink href="/start" size="lg">
+                  Set up your record
                 </ButtonLink>
               </Magnetic>
-              <ButtonLink href="#why" size="lg" variant="outline">
-                Why this way
+              <ButtonLink href="/app" size="lg" variant="outline">
+                See a live record
               </ButtonLink>
             </div>
           </Reveal>

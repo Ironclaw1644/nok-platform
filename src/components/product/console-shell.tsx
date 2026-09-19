@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { motion } from "motion/react";
 import type { ReactNode } from "react";
 import { NokmMark } from "@/components/marketing/mil-chrome";
-import { Badge, Dot } from "@/components/ui/kit";
+import { DemoSession } from "@/components/product/demo-session";
 import { DEMO_PROFILE } from "@/lib/domain/demo";
 import { cn } from "@/lib/utils";
 
@@ -30,10 +30,7 @@ export function ConsoleShell({ children }: { children: ReactNode }) {
               <span className="label-micro">Console</span>
             </div>
             <div className="flex items-center gap-3">
-              <Badge tone="warn">
-                <Dot tone="warn" pulse />
-                Demo data
-              </Badge>
+              <DemoSession />
             </div>
           </div>
 

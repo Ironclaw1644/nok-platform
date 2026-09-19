@@ -73,8 +73,8 @@ export function MilHero() {
                   Open the readiness console
                 </ButtonLink>
               </Magnetic>
-              <ButtonLink href="#gap" size="lg" variant="outline">
-                What breaks today
+              <ButtonLink href="/start" size="lg" variant="outline">
+                Set up an account
               </ButtonLink>
             </div>
           </Reveal>
