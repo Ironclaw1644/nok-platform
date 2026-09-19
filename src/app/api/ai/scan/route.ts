@@ -46,5 +46,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ live: false, reason: result.error }, { status: 200 });
   }
 
-  return NextResponse.json({ live: true, findings: result.findings });
+  return NextResponse.json({
+    live: true,
+    findings: result.findings,
+    // Measured, not estimated — so cost claims about this app can be checked.
+    usageUsd: Number(result.usageUsd.toFixed(5)),
+  });
 }

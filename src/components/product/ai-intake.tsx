@@ -3,7 +3,8 @@
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { useHydrated } from "@/components/motion/primitives";
-import { Badge, Button, Dot } from "@/components/ui/kit";
+import { AiBadge } from "@/components/ui/ai-badge";
+import { Button, Dot } from "@/components/ui/kit";
 import { FORMS } from "@/lib/domain/forms";
 import { cn } from "@/lib/utils";
 
@@ -241,9 +242,7 @@ export function AiIntake({
     <div className={cn("surface-card overflow-hidden", className)}>
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line px-5 py-3.5">
         <div className="label-micro">Add a document</div>
-        <Badge tone={result?.live ? "accent" : "neutral"}>
-          {result?.live ? "Claude Opus 5 · live" : liveAvailable ? "Live model available" : "Scripted demo"}
-        </Badge>
+        <AiBadge live={Boolean(result?.live)} />
       </div>
 
       <AnimatePresence mode="wait">

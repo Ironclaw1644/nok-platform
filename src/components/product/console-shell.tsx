@@ -9,8 +9,13 @@ import { DemoSession } from "@/components/product/demo-session";
 import { DEMO_PROFILE } from "@/lib/domain/demo";
 import { cn } from "@/lib/utils";
 
+/* One screen, one question. Five small pages beat one dense dashboard —
+   especially in a room, where anything that needs explaining is a cost. */
 const TABS = [
   { href: "/mil/console", label: "Readiness" },
+  { href: "/mil/console/conflicts", label: "Conflicts" },
+  { href: "/mil/console/release", label: "Release" },
+  { href: "/mil/console/add", label: "Add a document" },
   { href: "/mil/console/packet", label: "Survivor packet" },
 ] as const;
 
@@ -34,7 +39,7 @@ export function ConsoleShell({ children }: { children: ReactNode }) {
             </div>
           </div>
 
-          <nav className="-mb-px flex gap-6">
+          <nav className="-mb-px flex gap-6 overflow-x-auto">
             {TABS.map((t) => {
               const active = pathname === t.href;
               return (
@@ -42,7 +47,7 @@ export function ConsoleShell({ children }: { children: ReactNode }) {
                   key={t.href}
                   href={t.href}
                   className={cn(
-                    "relative py-3 text-[13px] transition-colors duration-200",
+                    "relative shrink-0 py-3 text-[13px] transition-colors duration-200",
                     active ? "text-ink" : "text-muted hover:text-ink",
                   )}
                 >
@@ -87,6 +92,23 @@ export function ConsoleShell({ children }: { children: ReactNode }) {
 
         {children}
       </main>
+    </div>
+  );
+}
+
+/**
+ * The one-line answer to "what am I looking at".
+ *
+ * Every screen carries one. If a screen needs more than a sentence to explain,
+ * it is doing more than one job and should be split.
+ */
+export function ScreenIntro({ title, line }: { title: string; line: string }) {
+  return (
+    <div className="mb-6 max-w-2xl">
+      <h2 className="font-display text-[clamp(1.4rem,2.6vw,1.9rem)] leading-[1.1] text-ink">
+        {title}
+      </h2>
+      <p className="mt-2.5 text-[14.5px] leading-relaxed text-muted">{line}</p>
     </div>
   );
 }

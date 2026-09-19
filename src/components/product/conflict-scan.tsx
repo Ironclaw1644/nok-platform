@@ -3,7 +3,8 @@
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect, useState } from "react";
 import { useHydrated } from "@/components/motion/primitives";
-import { Badge, Button, Dot } from "@/components/ui/kit";
+import { AiBadge } from "@/components/ui/ai-badge";
+import { Button, Dot } from "@/components/ui/kit";
 import type { Member, VaultRecord } from "@/lib/domain/types";
 import { cn } from "@/lib/utils";
 
@@ -184,9 +185,7 @@ export function ConflictScan({
     <div className={cn("surface-card overflow-hidden", className)}>
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line px-5 py-3.5">
         <div className="label-micro">Conflict scan</div>
-        <Badge tone={live ? "accent" : "neutral"}>
-          {live ? "Claude Opus 5 · live" : "Scripted demo"}
-        </Badge>
+        <AiBadge live={live} />
       </div>
 
       <AnimatePresence mode="wait">
