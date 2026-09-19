@@ -1,11 +1,18 @@
 # NOK Platform
 
-Two products, one codebase.
+**Three builds of the same company, side by side.** A concept demo — the
+interfaces are real and clickable, there is no backend behind them.
 
-- **`/` — Next of Kin.** Consumer family record. Warm, editorial, ivory and ink.
-- **`/mil` — NOKM.** Military and government survivor-readiness infrastructure. Dark, precision console.
+Live: **https://nok-platform.vercel.app**
 
-Both are live and interactive. Nothing here is a mockup.
+| # | Route | Version |
+|---|---|---|
+| **1** | `/plan` · `/plan/app` | **As specified.** Business Plan V9 rendered exactly as written — all five modules, three biometric tiers, partner channels, 13-month rollout. |
+| **2** | `/` · `/app` | **Recommended consumer build.** Same vault, inverted: the adult child starts the record and invites the parent up. |
+| **3** | `/mil` · `/mil/console` · `/mil/console/packet` | **NOKM.** Military and government survivor readiness. The strongest of the three. |
+
+A switcher in every nav moves between them. All three share one design system,
+so the comparison is about **scope**, not polish.
 
 ```bash
 npm install
@@ -13,14 +20,6 @@ npm run dev          # http://localhost:3000
 npm run check        # typecheck + lint + form register report
 npm run build
 ```
-
-| Route | What it is |
-|---|---|
-| `/` | Consumer landing |
-| `/app` | The Vance family record — working product |
-| `/mil` | NOKM landing |
-| `/mil/console` | Readiness console — working product |
-| `/mil/console/packet` | Survivor packet generation |
 
 ---
 
@@ -56,11 +55,11 @@ rewrite — see *Data layer* below.
 
 ### Two root layouts, on purpose
 
-`src/app/(consumer)/layout.tsx` and `src/app/(military)/layout.tsx` are both
-root layouts. Next.js allows one per top-level route group, which gives each
-product its own `<html>` attributes, metadata and brand tokens with no runtime
-theme switching and no flash of the wrong palette. Crossing between `/` and
-`/mil` triggers a hard navigation — correct, because they are two products.
+`(consumer)`, `(military)` and `(plan)` each have their own root layout.
+Next.js allows one per top-level route group, which gives each version its own
+`<html>` attributes, metadata and brand tokens with no runtime theme switching
+and no flash of the wrong palette. Crossing between them triggers a hard
+navigation — correct, because they are three different products.
 
 ### Design system
 
@@ -71,10 +70,22 @@ tree with zero component changes.
 
 | | Consumer (`nok`) | Military (`nokm`) |
 |---|---|---|
-| Ground | Bone `#fbf9f6` | Near-black `#07090a` |
-| Accent | Sienna `#b4531f` | Signal amber `#e0a22e` |
-| Display | Instrument Serif, used broadly | Instrument Serif, rationed to headlines |
-| Structure | Sans | Mono labels, tabular figures |
+| Ground | Soft grey `#fafafb` | Near-black `#0a0a0f` |
+| Accent | Violet `#6247c9` | Pastel violet `#a78bfa` |
+| Display | Plus Jakarta Sans, 700, tight | Same, rationed to headlines |
+| Structure | Inter | Mono labels, tabular figures |
+
+**The colour budget is three hues** — a neutral grey ramp, one violet, one rose
+— and it is enforced by `src/lib/design/contrast.test.ts`. Status is carried by
+weight and position first, colour second:
+
+- `ok` → **neutral grey.** Fine is quiet. Nothing good needs a colour.
+- `warn` → **the violet**, i.e. the brand colour, i.e. look here.
+- `crit` → **the rose.** The only alarming colour in the system.
+
+A fully verified screen therefore has no colour on it except the brand. An
+earlier build spent green, amber, orange and red on status alongside the brand
+and read as noise; the fix was fewer hues, not softer ones.
 
 Sage green and navy — the two palettes every competitor in this category uses —
 are deliberately absent.
@@ -237,4 +248,4 @@ Stated plainly so nobody demos this as finished.
 4. Passkey auth (WebAuthn), then client-side envelope encryption per
    `docs/key-escrow.md`.
 5. One funeral home or one VSO in Birmingham or Huntsville, contracted. This is
-   worth more than any amount of further building — see `docs/decisions.md`.
+   worth more than any amount of further building.

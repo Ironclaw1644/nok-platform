@@ -12,7 +12,6 @@ import "../globals.css";
  * question being asked.
  */
 export const metadata: Metadata = {
-  robots: { index: false, follow: false },
   title: {
     default: "N.O.K. — family information, communication and commerce",
     template: "%s · N.O.K.",

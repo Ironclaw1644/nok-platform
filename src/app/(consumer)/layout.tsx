@@ -4,7 +4,6 @@ import { fontVars } from "@/lib/fonts";
 import "../globals.css";
 
 export const metadata: Metadata = {
-  robots: { index: false, follow: false },
   title: {
     default: "Next of Kin — the record your family will actually need",
     template: "%s · Next of Kin",

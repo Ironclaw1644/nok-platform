@@ -117,39 +117,7 @@ never the document. If that is not absolute, no service member enrols, and a
 readiness product with no enrolment is a spreadsheet. It is enforced at the
 query layer, not by UI convention.
 
-### On the "$350M–$5B valuation"
-
-That figure is a market-size estimate, not a valuation, and it should not be
-repeated in front of an investor. Repeating it is the fastest way to lose a
-room. The underlying instinct — that the government-facing version is worth
-more than the consumer one — is correct, and this build acts on it. The number
-is not.
-
----
-
-## 5. What the company is actually worth
-
-Carta, Q2 2026: median post-money SAFE caps of $10M (rounds under $250K), $12.5M
-($500–999K), $18M ($1–2.4M). Non-AI pre-seed medians sit at **$6M–$10M**, and
-consumer seed rounds run materially below the AI-inflated all-in median.
-
-**As it stands** — Alabama Series LLC, pre-product, solo non-technical founder,
-no users, no signed partner: realistically **$2M–$6M post-money cap on a
-$100K–$400K friends-and-family round.** Below the Carta floor, because those
-medians assume a technical or repeat founder with a prototype. Institutional
-pre-seed will pass at any price; the Series LLC alone ends the conversation
-before the deck is read.
-
-**With this app shipped, real users, and one contracted, revenue-generating
-partner** — not a letter of intent: **$6M–$12M**, the non-AI pre-seed band.
-
-**The differential is 3–4×, and it is the single most useful number here.**
-Building is worth more than pitching. Which is the entire reason there is a
-developer conversation at all.
-
----
-
-## 6. Sequence
+## 5. Sequence
 
 1. **Convert to a Delaware C-corp.** Cheapest now, while few people hold units. Nothing about fundraising works until this is done.
 2. **Ship NOKM** to one design partner — a VSO or a National Guard unit in Huntsville or Birmingham.
@@ -158,3 +126,9 @@ developer conversation at all.
 5. **Consumer** follows the military build, reusing the same core. It is the second product, not the first.
 
 The order matters more than the speed.
+
+---
+
+*Valuation benchmarks and negotiating context are kept out of this repository
+deliberately — they are advice to the developer about his own position, not
+product documentation. They live outside the project.*
