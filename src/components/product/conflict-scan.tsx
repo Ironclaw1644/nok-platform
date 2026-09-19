@@ -139,17 +139,32 @@ export function ConflictScan({
   const [step, setStep] = useState(-1);
   const [done, setDone] = useState(false);
   const [live, setLive] = useState(false);
+  const [pending, setPending] = useState(false);
+  const [liveAvailable, setLiveAvailable] = useState(false);
   const [aiFindings, setAiFindings] = useState<Finding[] | null>(null);
 
   // Scripted findings are the floor. If a key is configured the route returns
-  // real ones and they replace these; if anything at all goes wrong — no key,
-  // budget spent, rate limited, model refusal — the demo still runs.
+  // real ones; if anything at all goes wrong — no key, budget spent, rate
+  // limited, model refusal — the demo still runs on these.
   const findings = aiFindings ?? deriveFindings(records, members);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/ai/status")
+      .then((r) => r.json())
+      .then((j) => !cancelled && setLiveAvailable(Boolean(j?.live)))
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   async function start() {
     setStep(0);
     setAiFindings(null);
     setLive(false);
+    setDone(false);
+    setPending(true);
     try {
       const res = await fetch("/api/ai/scan", {
         method: "POST",
@@ -163,6 +178,8 @@ export function ConflictScan({
       }
     } catch {
       /* stay on the scripted path */
+    } finally {
+      setPending(false);
     }
   }
 
@@ -172,12 +189,24 @@ export function ConflictScan({
     return () => window.clearTimeout(t);
   }, [step, reduce]);
 
+  /*
+   * Do not reveal results until the model has actually answered.
+   *
+   * The first version showed the scripted findings as soon as the step ticker
+   * finished (~2.5s), then silently swapped them for the live ones when the
+   * request landed forty seconds later. In a room that reads as the product
+   * changing its mind, or breaking.
+   *
+   * So when a key is configured, hold on the scanning state until the request
+   * resolves. Only the fallback is fast — which is the right way round, since
+   * the fallback is the thing that should never be noticed.
+   */
   useEffect(() => {
-    if (step === STEPS.length) {
-      const t = window.setTimeout(() => setDone(true), reduce ? 60 : 300);
-      return () => window.clearTimeout(t);
-    }
-  }, [step, reduce]);
+    if (step < STEPS.length) return;
+    if (liveAvailable && pending) return;
+    const t = window.setTimeout(() => setDone(true), reduce ? 60 : 300);
+    return () => window.clearTimeout(t);
+  }, [step, reduce, liveAvailable, pending]);
 
   const crit = findings.filter((f) => f.severity === "crit").length;
 
@@ -225,6 +254,19 @@ export function ConflictScan({
                 </span>
               </li>
             ))}
+
+            {/* The model takes tens of seconds on a full record. Say so, rather
+                than leaving a finished checklist sitting there looking stuck. */}
+            {step >= STEPS.length && pending && (
+              <li className="flex items-center gap-3">
+                <span className="w-5 shrink-0">
+                  <Dot tone="accent" pulse />
+                </span>
+                <span className="font-mono text-[12px] text-ink">
+                  Reading all {records.length} records together…
+                </span>
+              </li>
+            )}
           </motion.ul>
         )}
 
