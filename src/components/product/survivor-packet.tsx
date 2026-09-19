@@ -6,7 +6,7 @@ import { Badge, Button, Dot } from "@/components/ui/kit";
 import { DEMO_MILITARY_RECORDS, DEMO_MEMBERS, DEMO_PROFILE } from "@/lib/domain/demo";
 import { FORMS, isVerified } from "@/lib/domain/forms";
 import { computeReadiness, isReady } from "@/lib/domain/readiness";
-import { cn } from "@/lib/utils";
+import { cn, formatDate } from "@/lib/utils";
 
 /* ---------------------------------------------------------------------------
    The survivor packet.
@@ -117,6 +117,15 @@ export function SurvivorPacket() {
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             className="space-y-5"
           >
+            <div className="flex items-center justify-between gap-3" data-print="hide">
+              <p className="text-[12.5px] text-faint">
+                Generated {formatDate(new Date().toISOString())}
+              </p>
+              <Button size="sm" variant="secondary" onClick={() => window.print()}>
+                Print packet
+              </Button>
+            </div>
+
             {/* Cover */}
             <div className="surface-card overflow-hidden">
               <div className="border-b border-line bg-elevated px-6 py-5">
@@ -231,7 +240,12 @@ export function SurvivorPacket() {
                           <div className="flex flex-wrap items-baseline gap-x-2.5">
                             <span className="text-[13.5px] text-ink">{r.title}</span>
                             {form && (
-                              <span className="font-mono text-[11.5px] text-muted">
+                              // On paper the citation must carry its address —
+                              // see the print rules in globals.css.
+                              <span
+                                className="font-mono text-[11.5px] text-muted"
+                                data-print-url={form.source}
+                              >
                                 {form.number}
                               </span>
                             )}

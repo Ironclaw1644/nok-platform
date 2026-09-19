@@ -51,18 +51,18 @@
   --elevated: #f5f1eb;
   --ink: #17130f;
   --muted: #6b6158;
-  --faint: #9b9087;
+  --faint: #726860;
   --line: #e7e0d5;
   --line-strong: #d6ccbd;
-  --accent: #b4531f;
+  --accent: #a94d1c;
   --accent-ink: #ffffff;
   --accent-soft: #f6e9dd;
-  --ok: #3f7d5c;
-  --warn: #b07a18;
+  --ok: #356a4d;
+  --warn: #8f6410;
   --crit: #b23b32;
 
   --grid-line: rgb(23 19 15 / 0.045);
-  --glow: rgb(180 83 31 / 0.16);
+  --glow: rgb(169 77 28 / 0.16);
   --shadow-card: 0 1px 2px rgb(23 19 15 / 0.05), 0 8px 24px -12px rgb(23 19 15 / 0.1);
   color-scheme: light;
 }
@@ -76,7 +76,7 @@
   --elevated: #131a1b;
   --ink: #e9efed;
   --muted: #8b9a97;
-  --faint: #5d6c69;
+  --faint: #7f8f8c;
   --line: #1b2325;
   --line-strong: #2a3538;
   --accent: #e0a22e;
@@ -84,7 +84,7 @@
   --accent-soft: #241c0c;
   --ok: #4fa87a;
   --warn: #e0a22e;
-  --crit: #cf5a4e;
+  --crit: #d9675b;
 
   --grid-line: rgb(233 239 237 / 0.04);
   --glow: rgb(224 162 46 / 0.18);
@@ -209,6 +209,82 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* --- Print ----------------------------------------------------------------
+   The survivor packet is not a screen. It gets printed at a funeral home, on
+   whatever printer is in the back office, and handed to someone who will read
+   it in a car. So printing is a product requirement, not a nicety.
+
+   Three things matter: the dark console theme must not render as a black
+   rectangle that drains a toner cartridge and turns amber text invisible;
+   nothing interactive should survive onto paper; and every form citation must
+   print its URL, because a printed page cannot be clicked.
+   ------------------------------------------------------------------------ */
+@media print {
+  /* Force the light, high-contrast register regardless of brand. */
+  html,
+  html[data-brand="nok"],
+  html[data-brand="nokm"] {
+    --bg: #ffffff;
+    --surface: #ffffff;
+    --elevated: #f6f6f6;
+    --ink: #000000;
+    --muted: #2b2b2b;
+    --faint: #555555;
+    --line: #bfbfbf;
+    --line-strong: #8a8a8a;
+    --accent: #7a3413;
+    --accent-ink: #ffffff;
+    --accent-soft: #f0e7e0;
+    --ok: #1d5c3c;
+    --warn: #7a5200;
+    --crit: #8f2018;
+    --grid-line: transparent;
+    --glow: transparent;
+    --shadow-card: none;
+    background: #fff !important;
+  }
+
+  body {
+    background: #fff !important;
+  }
+
+  /* Chrome, controls and decoration never print. */
+  header,
+  footer,
+  nav,
+  button,
+  [data-print="hide"],
+  .bg-grid,
+  .bg-grid-fine {
+    display: none !important;
+  }
+
+  .surface-card {
+    border: 1px solid #bfbfbf !important;
+    box-shadow: none !important;
+    break-inside: avoid;
+  }
+
+  /* A packet section split across a page break is how a family misses a step. */
+  section,
+  li,
+  [data-print="keep"] {
+    break-inside: avoid;
+  }
+
+  /* A printed link is dead unless it carries its address. */
+  [data-print-url]::after {
+    content: " (" attr(data-print-url) ")";
+    font-size: 10px;
+    color: #555;
+    word-break: break-all;
+  }
+
+  @page {
+    margin: 16mm 14mm;
   }
 }
 

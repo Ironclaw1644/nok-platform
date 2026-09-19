@@ -64,7 +64,11 @@ export function ConsoleShell({ children }: { children: ReactNode }) {
         </div>
       </header>
 
-      <div className="mx-auto max-w-7xl px-5 py-8 sm:px-8 sm:py-10">
+      {/* <main> rather than <div>: axe flagged landmark-one-main and 66
+          out-of-landmark regions here. A screen-reader user otherwise has no
+          way to skip the header and jump to the record list — which on this
+          page is the entire content. */}
+      <main className="mx-auto max-w-7xl px-5 py-8 sm:px-8 sm:py-10">
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
             <h1 className="font-display text-3xl leading-none text-ink">{DEMO_PROFILE.name}</h1>
@@ -85,7 +89,7 @@ export function ConsoleShell({ children }: { children: ReactNode }) {
         </div>
 
         {children}
-      </div>
+      </main>
     </div>
   );
 }

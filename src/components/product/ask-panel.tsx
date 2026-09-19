@@ -59,7 +59,9 @@ export function AskPanel({
     <div className="surface-card overflow-hidden">
       <div className="flex items-center justify-between gap-3 border-b border-line px-5 py-3.5">
         <div className="label-micro">Ask someone</div>
-        <span className="text-[11.5px] text-faint">{gaps.length} gaps</span>
+        <span className="text-[11.5px] text-faint">
+          {gaps.length} gap{gaps.length === 1 ? "" : "s"}
+        </span>
       </div>
 
       <AnimatePresence mode="wait">

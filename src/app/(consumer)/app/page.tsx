@@ -25,7 +25,8 @@ export default function FamilyRecordPage() {
         </div>
       </header>
 
-      <div className="mx-auto max-w-6xl px-5 py-10 sm:px-8">
+      {/* <main>, not <div> — see the note in console-shell.tsx. */}
+      <main className="mx-auto max-w-6xl px-5 py-10 sm:px-8">
         <div className="mb-9 max-w-2xl">
           <h1 className="font-display text-[clamp(2rem,4.5vw,3rem)] leading-[1.02] text-ink">
             The Vance family record
@@ -53,7 +54,7 @@ export default function FamilyRecordPage() {
             <MembersPanel members={DEMO_FAMILY} />
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
