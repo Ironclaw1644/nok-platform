@@ -12,7 +12,13 @@ import {
   useTransform,
   type Variants,
 } from "motion/react";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type ReactNode,
+} from "react";
 import { cn } from "@/lib/utils";
 
 /* ---------------------------------------------------------------------------
@@ -29,6 +35,33 @@ import { cn } from "@/lib/utils";
 ------------------------------------------------------------------------- */
 
 const EASE = [0.16, 1, 0.3, 1] as const;
+
+/**
+ * True only after hydration.
+ *
+ * `useReducedMotion()` cannot be consulted on the server — there is no media
+ * query there — so it is effectively false during SSR and may be true on the
+ * client's very first render. Any component whose RENDERED OUTPUT (markup or
+ * text, as opposed to an animation prop) depends on it will therefore produce
+ * two different trees and trip React hydration error #418.
+ *
+ * Gating on this hook makes the first client render identical to the server's,
+ * and lets the reduced-motion end state apply on the render immediately after.
+ * Use it anywhere `reduce` decides what is on the page rather than how it moves.
+ */
+const noopSubscribe = () => () => {};
+
+export function useHydrated() {
+  // useSyncExternalStore rather than useEffect+setState: it is the primitive
+  // React provides for exactly this — a value that differs between the server
+  // snapshot and the client — and it avoids the extra render pass the effect
+  // version costs on every mount.
+  return useSyncExternalStore(
+    noopSubscribe,
+    () => true, // client
+    () => false, // server
+  );
+}
 
 /** Fade + rise on scroll entry. The workhorse. */
 export function Reveal({
@@ -132,13 +165,22 @@ export function SplitWords({
   step?: number;
   as?: "h1" | "h2" | "h3" | "p";
 }) {
-  const reduce = useReducedMotion();
   const words = text.split(" ");
 
-  if (reduce) {
-    return <Tag className={className}>{text}</Tag>;
-  }
-
+  /*
+   * NOTE: there is deliberately no `if (reduce) return <Tag>{text}</Tag>`
+   * branch here, and it must not come back.
+   *
+   * It caused React hydration error #418 for every reduced-motion user. The
+   * server has no media query, so it always rendered the animated span
+   * structure; a client with prefers-reduced-motion rendered flat text
+   * instead, the markup disagreed, and React threw away the server HTML.
+   *
+   * Motion handles this correctly on its own: <MotionConfig reducedMotion=
+   * "user"> in the root layout suppresses the transform, so these words fade
+   * in without moving. Fade is the accepted reduced-motion behaviour — it is
+   * movement that triggers vestibular symptoms, not opacity.
+   */
   return (
     <Tag className={className} aria-label={text}>
       <motion.span
@@ -191,7 +233,11 @@ export function Counter({
 }) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.6 });
-  const reduce = useReducedMotion();
+  // Gated: this decides the TEXT on the page, so it must match the server.
+  // Both hooks run unconditionally — `&&` would short-circuit the second.
+  const prefersReduce = useReducedMotion();
+  const hydrated = useHydrated();
+  const reduce = prefersReduce && hydrated;
   const [value, setValue] = useState(from);
 
   useEffect(() => {
@@ -253,13 +299,13 @@ export function Spotlight({
         y.set(-9999);
       }}
     >
-      {!reduce && (
-        <motion.div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-          style={{ background }}
-        />
-      )}
+      {/* Rendered unconditionally so the markup matches the server; the
+          pointer handler simply never moves it when motion is reduced. */}
+      <motion.div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        style={{ background }}
+      />
       {children}
     </div>
   );
@@ -282,14 +328,16 @@ export function Magnetic({
   const x = useSpring(mx, { stiffness: 260, damping: 22, mass: 0.6 });
   const y = useSpring(my, { stiffness: 260, damping: 22, mass: 0.6 });
 
-  if (reduce) return <div className={className}>{children}</div>;
-
+  // Always the same element. Returning a plain <div> when reduced changed the
+  // markup between server and client and tripped hydration error #418; now
+  // only the handlers are withheld, so nothing moves but the tree matches.
   return (
     <motion.div
       ref={ref}
       className={cn("inline-block", className)}
       style={{ x, y }}
       onPointerMove={(e) => {
+        if (reduce) return;
         const r = ref.current?.getBoundingClientRect();
         if (!r) return;
         mx.set((e.clientX - (r.left + r.width / 2)) * strength);

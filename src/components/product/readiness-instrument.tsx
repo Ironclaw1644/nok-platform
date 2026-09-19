@@ -2,6 +2,7 @@
 
 import { motion, useInView, useReducedMotion } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useHydrated } from "@/components/motion/primitives";
 import { Dot } from "@/components/ui/kit";
 import { computeReadiness, effectiveStatus, isReady, readinessVerdict } from "@/lib/domain/readiness";
 import type { VaultRecord } from "@/lib/domain/types";
@@ -59,7 +60,10 @@ export function ReadinessInstrument({
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.4 });
-  const reduce = useReducedMotion();
+  // Gated: decides the percentage rendered, so it must match the server.
+  const prefersReduce = useReducedMotion();
+  const hydrated = useHydrated();
+  const reduce = prefersReduce && hydrated;
   const breakdown = useMemo(() => computeReadiness(records), [records]);
   const verdict = readinessVerdict(breakdown, register);
 

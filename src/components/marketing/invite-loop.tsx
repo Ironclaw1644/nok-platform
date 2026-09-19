@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion, useInView, useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
+import { useHydrated } from "@/components/motion/primitives";
 import { Dot } from "@/components/ui/kit";
 import { cn } from "@/lib/utils";
 
@@ -38,7 +39,10 @@ const STEP_MS = 1500;
 export function InviteLoop({ className }: { className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { amount: 0.4 });
-  const reduce = useReducedMotion();
+  // Gated: decides how many beats are in the DOM, so it must match the server.
+  const prefersReduce = useReducedMotion();
+  const hydrated = useHydrated();
+  const reduce = prefersReduce && hydrated;
   const [n, setN] = useState(0);
 
   useEffect(() => {
