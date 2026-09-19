@@ -149,7 +149,7 @@ export function SurvivorPacket() {
                     <Dot tone="crit" pulse />
                     <h3 className="text-[14px] font-medium text-crit">
                       Read this first — {missing.length} record
-                      {missing.length > 1 ? "s are" : " is"} not in this packet
+                      {missing.length > 1 ? "s" : ""} cannot be relied on
                     </h3>
                   </div>
                   <div className="mt-4 space-y-3.5">
@@ -168,9 +168,12 @@ export function SurvivorPacket() {
                               <span className="label-micro text-crit">blocking</span>
                             )}
                           </div>
-                          {r.retrievalPath && (
+                          {/* A stale blocking record has no retrieval path — it
+                              is already held. What the family needs is the
+                              reason it cannot be trusted. */}
+                          {(r.retrievalPath ?? r.note) && (
                             <p className="mt-1.5 text-[13px] leading-relaxed text-muted">
-                              {r.retrievalPath}
+                              {r.retrievalPath ?? r.note}
                             </p>
                           )}
                           <p className="mt-1.5 text-[12.5px] leading-relaxed text-faint">

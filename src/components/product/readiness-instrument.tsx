@@ -28,6 +28,15 @@ const STATUS_LABEL: Record<string, string> = {
   missing: "Missing",
 };
 
+/* A stale blocking record IS a gap (see isReady) but it is NOT absent. Saying
+   "missing" about a document the family already has in a drawer sends them
+   looking for it. */
+const GAP_PHRASE: Record<string, string> = {
+  missing: "is missing",
+  stale: "is out of date",
+  requested: "is still being retrieved",
+};
+
 export function ReadinessInstrument({
   records,
   className,
@@ -224,7 +233,8 @@ export function ReadinessInstrument({
         <div className="relative mt-5 rounded-[var(--radius-field)] border border-crit/25 bg-crit/6 p-3.5">
           <div className="label-micro text-crit">Why the ceiling</div>
           <p className="mt-1.5 text-[13px] leading-relaxed text-ink">
-            <span className="font-medium">{breakdown.gaps[0].title}</span> is missing.{" "}
+            <span className="font-medium">{breakdown.gaps[0].title}</span>{" "}
+            {GAP_PHRASE[effectiveStatus(breakdown.gaps[0])] ?? "is missing"}.{" "}
             {breakdown.gaps[0].unlocks.length}{" "}
             {register === "family" ? "thing" : "benefit"}
             {breakdown.gaps[0].unlocks.length === 1 ? "" : "s"} depend on it, so{" "}

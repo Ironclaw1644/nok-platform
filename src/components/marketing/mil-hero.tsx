@@ -33,7 +33,12 @@ export function MilHero() {
         style={reduce ? undefined : { y, opacity }}
         className="relative mx-auto grid max-w-7xl gap-14 px-5 pb-24 pt-20 sm:px-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-16 lg:pb-32 lg:pt-28"
       >
-        <div>
+        {/* min-w-0: without it the three-up stat grid below sets a min-content
+            width that pushes this column past the viewport on a phone. The
+            section's overflow-hidden then CLIPS the excess instead of
+            scrolling, so the page measures as having no overflow while
+            visibly losing its right edge. */}
+        <div className="min-w-0">
           <Reveal y={10}>
             <Eyebrow>Survivor readiness infrastructure</Eyebrow>
           </Reveal>
@@ -68,7 +73,7 @@ export function MilHero() {
           </Reveal>
 
           <Reveal delay={0.8} y={14}>
-            <dl className="mt-12 grid max-w-lg grid-cols-3 gap-px overflow-hidden rounded-[var(--radius-card)] border border-line bg-line">
+            <dl className="mt-12 grid max-w-lg grid-cols-1 gap-px overflow-hidden rounded-[var(--radius-card)] border border-line bg-line sm:grid-cols-3">
               {[
                 { k: "Records tracked", v: "12", s: "per service member" },
                 { k: "Verification", v: "Sourced", s: "every form number cited" },

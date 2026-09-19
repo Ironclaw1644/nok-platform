@@ -93,6 +93,22 @@
 }
 
 /* --- Base ---------------------------------------------------------------- */
+
+/* A bare `grid` with only responsive column counts (grid gap-5 lg:grid-cols-2)
+   has no explicit template below lg. Auto-placement then puts everything in one
+   IMPLICIT column sized by `grid-auto-columns: auto` — which resolves to
+   max-content and happily overflows the container on a phone.
+   `min-w-0` on the child does not help: it constrains the item, not the track.
+
+   This bit us for real: the NOKM hero measured as having zero horizontal
+   overflow (the section's overflow-hidden was clipping it) while visibly
+   losing its right edge on a 390px viewport. Defaulting implicit tracks to
+   minmax(0, 1fr) fixes every such grid at once and is inert wherever
+   grid-template-columns is actually set. */
+[class~="grid"] {
+  grid-auto-columns: minmax(0, 1fr);
+}
+
 html {
   -webkit-text-size-adjust: 100%;
   scrollbar-gutter: stable;

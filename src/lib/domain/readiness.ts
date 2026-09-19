@@ -1,5 +1,13 @@
-import { daysSince } from "@/lib/utils";
 import type { Criticality, ReadinessBreakdown, RecordStatus, VaultRecord } from "./types";
+
+/* Local rather than imported from @/lib/utils so this module has no runtime
+   imports at all — which lets readiness.test.ts run on Node's type-stripping
+   loader with no bundler, no alias resolution and no test framework. The
+   scoring rule is the one piece of logic the whole product rests on; it should
+   be the easiest thing in the repo to test. */
+function daysSince(iso: string) {
+  return Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000);
+}
 
 /* ---------------------------------------------------------------------------
    Readiness scoring.
@@ -45,9 +53,30 @@ export function effectiveStatus(r: VaultRecord): RecordStatus {
   return daysSince(r.lastVerified) > r.reviewDays ? "stale" : "verified";
 }
 
+/**
+ * Whether a record would actually serve the person who needs it.
+ *
+ * The interesting case is STALE, and the answer depends on criticality:
+ *
+ * - A stale **blocking** record is NOT ready. These are the records that gate
+ *   everything else, and the failure mode is not absence — it is a document
+ *   that is present, trusted, and wrong. An emergency-data form that predates
+ *   a divorce still names the ex-spouse as the person authorised to direct
+ *   disposition. The family does not discover this by noticing a gap; they
+ *   discover it when the wrong person gets the call. Treating that as "held"
+ *   would be the single most dangerous thing this scoring function could do.
+ *
+ * - A stale **high or standard** record IS ready. A will three years past its
+ *   review date is still a will. Flag it, do not fail the family over it.
+ *
+ * This asymmetry is the rule. It is here, in one place, rather than emerging
+ * accidentally from how the UI happens to filter.
+ */
 export function isReady(r: VaultRecord): boolean {
   const s = effectiveStatus(r);
-  return s === "verified" || s === "on_file";
+  if (s === "verified" || s === "on_file") return true;
+  if (s === "stale") return r.criticality !== "blocking";
+  return false;
 }
 
 export function computeReadiness(records: VaultRecord[]): ReadinessBreakdown {
@@ -72,7 +101,11 @@ export function computeReadiness(records: VaultRecord[]): ReadinessBreakdown {
     tally[r.criticality].total += 1;
     if (isReady(r)) tally[r.criticality].ready += 1;
     if (status === "stale") staleCount += 1;
-    if (status === "missing" || status === "requested") gaps.push(r);
+    // `gaps` is everything that would fail the family today — which includes a
+    // stale blocking record, per isReady() above. Keeping this in step with
+    // isReady rather than hard-coding statuses is what stops the UI saying
+    // "missing" about a record that is actually present and out of date.
+    if (!isReady(r)) gaps.push(r);
   }
 
   let score = possible === 0 ? 0 : earned / possible;
@@ -114,9 +147,12 @@ export function readinessVerdict(
     return {
       label: family ? "Gaps that matter" : "Not survivable",
       tone: "crit",
+      // "missing or out of date", not "missing" — a stale blocking record
+      // counts here too, and calling a document that exists "missing" is the
+      // kind of small inaccuracy that costs a family an afternoon.
       detail: family
-        ? `${blockingGaps} thing${blockingGaps > 1 ? "s are" : " is"} missing that everything else depends on.`
-        : `${blockingGaps} record${blockingGaps > 1 ? "s" : ""} missing that every other benefit depends on.`,
+        ? `${blockingGaps} thing${blockingGaps > 1 ? "s" : ""} that everything else depends on ${blockingGaps > 1 ? "are" : "is"} missing or out of date.`
+        : `${blockingGaps} record${blockingGaps > 1 ? "s" : ""} that every other benefit depends on ${blockingGaps > 1 ? "are" : "is"} missing or out of date.`,
     };
   }
   if (b.score >= 0.9) {

@@ -37,11 +37,13 @@ export default function FamilyRecordPage() {
           </p>
         </div>
 
+        {/* min-w-0: grid items default to min-width:auto and would otherwise be
+            forced wider than the viewport by a long record row. */}
         <div className="grid gap-5 lg:grid-cols-[1.3fr_1fr] lg:items-start">
-          <div className="space-y-5">
+          <div className="min-w-0 space-y-5">
             <RecordTable records={DEMO_CONSUMER_RECORDS} />
           </div>
-          <div className="space-y-5">
+          <div className="min-w-0 space-y-5">
             <ReadinessInstrument
               records={DEMO_CONSUMER_RECORDS}
               label="How complete this is"
