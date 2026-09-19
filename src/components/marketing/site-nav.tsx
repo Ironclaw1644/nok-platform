@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { AnimatePresence, motion, useMotionValueEvent, useReducedMotion, useScroll } from "motion/react";
-import { useEffect, useState, type ReactNode } from "react";
+import { Fragment, useEffect, useState, type ReactNode } from "react";
 import { useHydrated } from "@/components/motion/primitives";
 import { ButtonLink } from "@/components/ui/kit";
 import { cn } from "@/lib/utils";
@@ -146,6 +146,16 @@ export function SiteNav({
       {/* Mobile panel */}
       <AnimatePresence>
         {open && (
+          <Fragment key="menu">
+          <motion.div
+            aria-hidden
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => setOpen(false)}
+            className="fixed inset-0 top-[64px] z-30 bg-ink/25 backdrop-blur-[2px] lg:hidden"
+          />
           <motion.div
             id="site-menu"
             initial={reduce ? { opacity: 0 } : { opacity: 0, y: -8 }}
@@ -203,18 +213,23 @@ export function SiteNav({
                 >
                   Try the demo
                 </ButtonLink>
-                <ButtonLink
-                  href={cta.href}
-                  size="lg"
-                  variant="secondary"
-                  className="w-full"
-                  onClick={() => setOpen(false)}
-                >
-                  {cta.label}
-                </ButtonLink>
+                {/* The consumer surface's own CTA already IS "Try the demo",
+                    so rendering both produced the same button twice. */}
+                {cta.href !== "/start" && (
+                  <ButtonLink
+                    href={cta.href}
+                    size="lg"
+                    variant="secondary"
+                    className="w-full"
+                    onClick={() => setOpen(false)}
+                  >
+                    {cta.label}
+                  </ButtonLink>
+                )}
               </div>
             </nav>
           </motion.div>
+          </Fragment>
         )}
       </AnimatePresence>
     </>
