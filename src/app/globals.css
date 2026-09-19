@@ -1,0 +1,237 @@
+@import "tailwindcss";
+
+/* ============================================================================
+   NOK PLATFORM — DESIGN SYSTEM
+   Two brand surfaces sharing one token contract.
+
+   [data-brand="nok"]   Consumer. Warm editorial. Ivory, ink, sienna.
+                        Reads as "a family record worth keeping."
+   [data-brand="nokm"]  Military / government. Precision console. Near-black,
+                        steel, signal amber. Reads as "instrument, not brochure."
+
+   Every component consumes the SEMANTIC token (--color-surface, --color-accent).
+   No component references a brand directly. Swapping data-brand reskins the
+   entire tree with zero component changes — that is the whole point.
+   ========================================================================= */
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-elevated: var(--elevated);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --color-crit: var(--crit);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-display), ui-serif, Georgia, serif;
+  --font-mono: var(--font-mono-face), ui-monospace, SFMono-Regular, monospace;
+
+  --radius-card: 14px;
+  --radius-field: 10px;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+/* --- Consumer brand -------------------------------------------------------
+   Sage and navy are the two most exhausted palettes in this category; every
+   competitor uses one or the other. Bone + ink + sienna reads warmer and
+   older, closer to an archive than to a SaaS dashboard. */
+[data-brand="nok"] {
+  --bg: #fbf9f6;
+  --surface: #ffffff;
+  --elevated: #f5f1eb;
+  --ink: #17130f;
+  --muted: #6b6158;
+  --faint: #9b9087;
+  --line: #e7e0d5;
+  --line-strong: #d6ccbd;
+  --accent: #b4531f;
+  --accent-ink: #ffffff;
+  --accent-soft: #f6e9dd;
+  --ok: #3f7d5c;
+  --warn: #b07a18;
+  --crit: #b23b32;
+
+  --grid-line: rgb(23 19 15 / 0.045);
+  --glow: rgb(180 83 31 / 0.16);
+  --shadow-card: 0 1px 2px rgb(23 19 15 / 0.05), 0 8px 24px -12px rgb(23 19 15 / 0.1);
+  color-scheme: light;
+}
+
+/* --- Military / government brand ------------------------------------------
+   Deliberately NOT the blue-and-gold federal website look. Procurement
+   audiences have seen a thousand of those. This reads as fielded equipment. */
+[data-brand="nokm"] {
+  --bg: #07090a;
+  --surface: #0c1011;
+  --elevated: #131a1b;
+  --ink: #e9efed;
+  --muted: #8b9a97;
+  --faint: #5d6c69;
+  --line: #1b2325;
+  --line-strong: #2a3538;
+  --accent: #e0a22e;
+  --accent-ink: #120d02;
+  --accent-soft: #241c0c;
+  --ok: #4fa87a;
+  --warn: #e0a22e;
+  --crit: #cf5a4e;
+
+  --grid-line: rgb(233 239 237 / 0.04);
+  --glow: rgb(224 162 46 / 0.18);
+  --shadow-card: 0 1px 0 rgb(255 255 255 / 0.03) inset, 0 12px 40px -16px rgb(0 0 0 / 0.8);
+  color-scheme: dark;
+}
+
+/* --- Base ---------------------------------------------------------------- */
+html {
+  -webkit-text-size-adjust: 100%;
+  scrollbar-gutter: stable;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-feature-settings: "cv11", "ss01";
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+/* Numeric columns must not jitter as values animate. */
+.tnum {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* --- Utility layer -------------------------------------------------------- */
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+  }
+
+  /* Small uppercase label. Used as the structural voice of the NOKM surface. */
+  .label-micro {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    line-height: 1;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+
+  .surface-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+  }
+
+  /* Engineering grid. Anchors the console surface; near-invisible on consumer. */
+  .bg-grid {
+    background-image: linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 56px 56px;
+  }
+
+  .bg-grid-fine {
+    background-image: linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 14px 14px;
+  }
+
+  /* Radial fade so the grid dissolves rather than ending on a hard edge. */
+  .mask-fade-b {
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
+  }
+
+  .mask-fade-radial {
+    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, #000 30%, transparent 100%);
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, #000 30%, transparent 100%);
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-pretty {
+    text-wrap: pretty;
+  }
+}
+
+/* --- Reduced motion -------------------------------------------------------
+   Gate at the source rather than blanket-killing animation: users get the END
+   state, not a half-built layout. Motion's own components are handled by
+   <MotionConfig reducedMotion="user"> in the root layout; this covers CSS. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* --- Ambient keyframes ---------------------------------------------------- */
+@keyframes sweep {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  10%,
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.7;
+  }
+  70% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
