@@ -174,7 +174,7 @@ form numbers — and **killed two benefit claims that were already in the copy**
 
 Both were removed from the record data and from the marketing copy. The hero
 headline changed from *"Every survivor benefit runs through one document"* to
-*"The honors he earned run through one document"*, because funeral honors and a
+*"The honors they earned run through one document"*, because funeral honors and a
 government headstone **are** both established by the DD 214 and the other two
 are not documented that way.
 

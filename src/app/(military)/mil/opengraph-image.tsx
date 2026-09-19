@@ -81,7 +81,7 @@ export default async function Image() {
               fontWeight: 700,
             }}
           >
-            The honors he earned run through one document.
+            The honors they earned run through one document.
           </div>
           <div
             style={{

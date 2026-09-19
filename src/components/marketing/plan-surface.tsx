@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from "motion/react";
-import { useRef, useState } from "react";
+import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
+import { useRef } from "react";
 import { Counter, Magnetic, Reveal, SplitWords, Stagger, StaggerItem } from "@/components/motion/primitives";
 import { Badge, ButtonLink, Card, Dot, Eyebrow } from "@/components/ui/kit";
-import { VersionSwitch } from "@/components/ui/version-switch";
+import { SiteNav } from "@/components/marketing/site-nav";
 import {
   PLAN_CHANNELS,
   PLAN_MODULES,
@@ -13,7 +13,6 @@ import {
   PLAN_STAGES,
   PLAN_TIERS,
 } from "@/lib/domain/plan-demo";
-import { cn } from "@/lib/utils";
 
 /* =========================================================================
    The AS-SPECIFIED surface — Next_of_Kin_Business_Plan_V9.pdf, rendered.
@@ -44,40 +43,13 @@ const NAV = [
 ];
 
 export function PlanNav() {
-  const { scrollY } = useScroll();
-  const [stuck, setStuck] = useState(false);
-  useMotionValueEvent(scrollY, "change", (v) => setStuck(v > 24));
-
   return (
-    <header
-      className={cn(
-        "sticky top-0 z-50 border-b transition-colors duration-500",
-        stuck ? "border-line bg-bg/85 backdrop-blur-xl" : "border-transparent",
-      )}
-    >
-      <div className="mx-auto flex h-[70px] max-w-6xl items-center justify-between px-5 sm:px-8">
-        <Link href="/plan">
-          <PlanMark />
-        </Link>
-        <nav className="hidden items-center gap-7 lg:flex">
-          {NAV.map((n) => (
-            <a
-              key={n.href}
-              href={n.href}
-              className="text-[13.5px] text-muted transition-colors duration-200 hover:text-ink"
-            >
-              {n.label}
-            </a>
-          ))}
-        </nav>
-        <div className="flex items-center gap-3">
-          <VersionSwitch current="/plan" />
-          <ButtonLink href="/plan/app" size="sm">
-            Open the app
-          </ButtonLink>
-        </div>
-      </div>
-    </header>
+    <SiteNav
+      mark={<PlanMark />}
+      links={NAV}
+      current="/plan"
+      cta={{ href: "/plan/app", label: "Open the app" }}
+    />
   );
 }
 

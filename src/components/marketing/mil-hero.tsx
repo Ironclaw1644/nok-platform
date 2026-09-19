@@ -51,7 +51,7 @@ export function MilHero() {
               official page we read. So the headline says only what is true. */}
           <SplitWords
             as="h1"
-            text="The honors he earned run through one document."
+            text="The honors they earned run through one document."
             className="mt-6 max-w-[19ch] font-display text-[clamp(2.2rem,4.3vw,3.4rem)] leading-[1.04] text-balance"
             delay={0.15}
           />

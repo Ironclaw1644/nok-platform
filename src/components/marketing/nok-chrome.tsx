@@ -1,10 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMotionValueEvent, useScroll } from "motion/react";
-import { useState } from "react";
-import { ButtonLink } from "@/components/ui/kit";
-import { VersionSwitch } from "@/components/ui/version-switch";
+import { SiteNav } from "@/components/marketing/site-nav";
 import { cn } from "@/lib/utils";
 
 /* The consumer mark: two joined strokes — a line continuing through a break.
@@ -25,46 +22,16 @@ const NAV = [
   { href: "#why", label: "Why it starts with you" },
   { href: "#how", label: "How it works" },
   { href: "#inside", label: "What's inside" },
-  { href: "#honest", label: "What we don't do" },
 ];
 
 export function NokNav() {
-  const { scrollY } = useScroll();
-  const [stuck, setStuck] = useState(false);
-  useMotionValueEvent(scrollY, "change", (v) => setStuck(v > 24));
-
   return (
-    <header
-      className={cn(
-        "sticky top-0 z-50 border-b transition-colors duration-500",
-        stuck ? "border-line bg-bg/85 backdrop-blur-xl" : "border-transparent",
-      )}
-    >
-      <div className="mx-auto flex h-[72px] max-w-6xl items-center justify-between px-5 sm:px-8">
-        <Link href="/">
-          <NokMark />
-        </Link>
-
-        <nav className="hidden items-center gap-7 lg:flex">
-          {NAV.map((n) => (
-            <a
-              key={n.href}
-              href={n.href}
-              className="text-[13.5px] text-muted transition-colors duration-200 hover:text-ink"
-            >
-              {n.label}
-            </a>
-          ))}
-        </nav>
-
-        <div className="flex items-center gap-3">
-          <VersionSwitch current="/" />
-          <ButtonLink href="/start" size="sm">
-            Set up
-          </ButtonLink>
-        </div>
-      </div>
-    </header>
+    <SiteNav
+      mark={<NokMark />}
+      links={NAV}
+      current="/"
+      cta={{ href: "/start", label: "Try the demo" }}
+    />
   );
 }
 

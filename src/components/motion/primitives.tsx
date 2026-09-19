@@ -193,8 +193,15 @@ export function SplitWords({
         }}
         style={{ display: "inline" }}
       >
+        {/* pb/-mb pair below: overflow-hidden clips at the line box, which
+            shears the descenders off y, g and p. The padding extends the clip
+            region below the baseline; the negative margin cancels the extra
+            height so layout is unchanged. */}
         {words.map((w, i) => (
-          <span key={`${w}-${i}`} className="inline-block overflow-hidden align-bottom">
+          <span
+            key={`${w}-${i}`}
+            className="inline-block overflow-hidden align-bottom pb-[0.18em] -mb-[0.18em]"
+          >
             <motion.span
               className="inline-block"
               variants={{

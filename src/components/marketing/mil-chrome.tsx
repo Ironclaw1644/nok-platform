@@ -1,10 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { motion, useMotionValueEvent, useScroll } from "motion/react";
-import { useState } from "react";
-import { ButtonLink, Dot } from "@/components/ui/kit";
-import { VersionSwitch } from "@/components/ui/version-switch";
+import { SiteNav } from "@/components/marketing/site-nav";
+import { Dot } from "@/components/ui/kit";
 import { cn } from "@/lib/utils";
 
 /* Fielded-equipment mark: a bracketed N, like a stencil on a case. */
@@ -33,42 +31,13 @@ const NAV = [
 ];
 
 export function MilNav() {
-  const { scrollY } = useScroll();
-  const [stuck, setStuck] = useState(false);
-  useMotionValueEvent(scrollY, "change", (v) => setStuck(v > 24));
-
   return (
-    <motion.header
-      className={cn(
-        "sticky top-0 z-50 border-b transition-colors duration-500",
-        stuck ? "border-line bg-bg/80 backdrop-blur-xl" : "border-transparent bg-transparent",
-      )}
-    >
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8">
-        <Link href="/mil" className="shrink-0">
-          <NokmMark />
-        </Link>
-
-        <nav className="hidden items-center gap-8 md:flex">
-          {NAV.map((n) => (
-            <a
-              key={n.href}
-              href={n.href}
-              className="relative text-[13px] text-muted transition-colors duration-200 hover:text-ink"
-            >
-              {n.label}
-            </a>
-          ))}
-        </nav>
-
-        <div className="flex items-center gap-3">
-          <VersionSwitch current="/mil" />
-          <ButtonLink href="/mil/console" size="sm" variant="primary">
-            Open console
-          </ButtonLink>
-        </div>
-      </div>
-    </motion.header>
+    <SiteNav
+      mark={<NokmMark />}
+      links={NAV}
+      current="/mil"
+      cta={{ href: "/mil/console", label: "Open console" }}
+    />
   );
 }
 
