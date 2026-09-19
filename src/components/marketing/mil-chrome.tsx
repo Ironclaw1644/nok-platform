@@ -28,6 +28,7 @@ const NAV = [
   { href: "#system", label: "System" },
   { href: "#scale", label: "At scale" },
   { href: "#security", label: "Security" },
+  { href: "/pricing", label: "Pricing" },
 ];
 
 export function MilNav() {
