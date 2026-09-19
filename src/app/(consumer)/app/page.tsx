@@ -43,7 +43,7 @@ export default function FamilyRecordPage() {
         <div className="grid gap-5 lg:grid-cols-[1.3fr_1fr] lg:items-start">
           <div className="min-w-0 space-y-5">
             <RecordTable records={DEMO_CONSUMER_RECORDS} />
-            <ConflictScan records={DEMO_CONSUMER_RECORDS} members={DEMO_FAMILY} />
+            <ConflictScan dataset="family" records={DEMO_CONSUMER_RECORDS} members={DEMO_FAMILY} />
           </div>
           <div className="min-w-0 space-y-5">
             <ReadinessInstrument

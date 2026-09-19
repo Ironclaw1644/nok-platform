@@ -121,10 +121,14 @@ function deriveFindings(records: VaultRecord[], members: Member[]): Finding[] {
 export function ConflictScan({
   records,
   members,
+  dataset,
   className,
 }: {
   records: VaultRecord[];
   members: Member[];
+  /** Named server-side dataset. Deliberately a name rather than a payload —
+   *  see the API route for why. */
+  dataset: "military" | "family";
   className?: string;
 }) {
   const prefersReduce = useReducedMotion();
@@ -133,7 +137,33 @@ export function ConflictScan({
 
   const [step, setStep] = useState(-1);
   const [done, setDone] = useState(false);
-  const findings = deriveFindings(records, members);
+  const [live, setLive] = useState(false);
+  const [aiFindings, setAiFindings] = useState<Finding[] | null>(null);
+
+  // Scripted findings are the floor. If a key is configured the route returns
+  // real ones and they replace these; if anything at all goes wrong — no key,
+  // budget spent, rate limited, model refusal — the demo still runs.
+  const findings = aiFindings ?? deriveFindings(records, members);
+
+  async function start() {
+    setStep(0);
+    setAiFindings(null);
+    setLive(false);
+    try {
+      const res = await fetch("/api/ai/scan", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ dataset }),
+      });
+      const json = await res.json();
+      if (json?.live && Array.isArray(json.findings) && json.findings.length) {
+        setAiFindings(json.findings as Finding[]);
+        setLive(true);
+      }
+    } catch {
+      /* stay on the scripted path */
+    }
+  }
 
   useEffect(() => {
     if (step < 0 || step >= STEPS.length) return;
@@ -154,7 +184,9 @@ export function ConflictScan({
     <div className={cn("surface-card overflow-hidden", className)}>
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line px-5 py-3.5">
         <div className="label-micro">Conflict scan</div>
-        <Badge tone="neutral">Scripted demo</Badge>
+        <Badge tone={live ? "accent" : "neutral"}>
+          {live ? "Claude Opus 5 · live" : "Scripted demo"}
+        </Badge>
       </div>
 
       <AnimatePresence mode="wait">
@@ -165,7 +197,7 @@ export function ConflictScan({
               two of them <span className="text-ink">disagree</span>. It will not tell you
               which one is right.
             </p>
-            <Button size="sm" onClick={() => setStep(0)}>
+            <Button size="sm" onClick={start}>
               Scan the record
             </Button>
           </motion.div>

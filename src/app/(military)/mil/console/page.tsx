@@ -21,7 +21,7 @@ export default function ConsolePage() {
       <div className="grid gap-5 lg:grid-cols-[1.35fr_1fr] lg:items-start">
         <div className="min-w-0 space-y-5">
           <RecordTable records={DEMO_MILITARY_RECORDS} />
-          <ConflictScan records={DEMO_MILITARY_RECORDS} members={DEMO_MEMBERS} />
+          <ConflictScan dataset="military" records={DEMO_MILITARY_RECORDS} members={DEMO_MEMBERS} />
         </div>
         <div className="min-w-0 space-y-5">
           <ReadinessInstrument records={DEMO_MILITARY_RECORDS} />
