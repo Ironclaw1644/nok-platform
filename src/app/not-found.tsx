@@ -15,7 +15,7 @@ export default function NotFound() {
       <body className="min-h-full bg-bg text-ink">
         <main className="mx-auto flex min-h-screen max-w-xl flex-col justify-center px-6 py-20">
           <div className="label-micro">404</div>
-          <h1 className="mt-5 font-display text-[clamp(2.4rem,7vw,3.6rem)] leading-[1.02]">
+          <h1 className="mt-5 font-display text-[clamp(2rem,4.6vw,2.9rem)] leading-[1.06]">
             Nothing filed here.
           </h1>
           <p className="mt-5 text-[15px] leading-relaxed text-muted">

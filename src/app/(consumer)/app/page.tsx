@@ -28,7 +28,7 @@ export default function FamilyRecordPage() {
       {/* <main>, not <div> — see the note in console-shell.tsx. */}
       <main className="mx-auto max-w-6xl px-5 py-10 sm:px-8">
         <div className="mb-9 max-w-2xl">
-          <h1 className="font-display text-[clamp(2rem,4.5vw,3rem)] leading-[1.02] text-ink">
+          <h1 className="font-display text-[clamp(1.8rem,3.4vw,2.5rem)] leading-[1.06] text-ink">
             The Vance family record
           </h1>
           <p className="mt-3 text-[15px] leading-relaxed text-muted">

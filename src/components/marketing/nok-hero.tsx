@@ -34,7 +34,7 @@ export function NokHero() {
           <SplitWords
             as="h1"
             text="You don't know where anything is."
-            className="mt-6 max-w-[13ch] font-display text-[clamp(2.8rem,6.8vw,5rem)] leading-[0.95] text-balance"
+            className="mt-6 max-w-[17ch] font-display text-[clamp(2.3rem,4.8vw,3.7rem)] leading-[1.04] text-balance"
             delay={0.12}
           />
 

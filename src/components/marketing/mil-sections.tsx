@@ -73,7 +73,7 @@ export function TheGap() {
             <Eyebrow>What actually happens</Eyebrow>
           </Reveal>
           <Reveal delay={0.08}>
-            <h2 className="mt-5 font-display text-[clamp(2rem,4.4vw,3.2rem)] leading-[1.03] text-balance">
+            <h2 className="mt-5 font-display text-[clamp(1.85rem,3.6vw,2.6rem)] leading-[1.06] text-balance">
               The benefits are earned. The week is a paperwork emergency.
             </h2>
           </Reveal>
@@ -169,7 +169,7 @@ export function TheSystem() {
             <Eyebrow>The system</Eyebrow>
           </Reveal>
           <Reveal delay={0.08}>
-            <h2 className="mt-5 font-display text-[clamp(2rem,4.4vw,3.2rem)] leading-[1.03] text-balance">
+            <h2 className="mt-5 font-display text-[clamp(1.85rem,3.6vw,2.6rem)] leading-[1.06] text-balance">
               Three jobs. Nothing else.
             </h2>
           </Reveal>
@@ -236,7 +236,7 @@ export function AtScale() {
               <Eyebrow>At scale</Eyebrow>
             </Reveal>
             <Reveal delay={0.08}>
-              <h2 className="mt-5 font-display text-[clamp(2rem,4.4vw,3.2rem)] leading-[1.03] text-balance">
+              <h2 className="mt-5 font-display text-[clamp(1.85rem,3.6vw,2.6rem)] leading-[1.06] text-balance">
                 An organisation sees the score. Never the document.
               </h2>
             </Reveal>
@@ -382,7 +382,7 @@ export function SecurityModel() {
               <Eyebrow>Security model</Eyebrow>
             </Reveal>
             <Reveal delay={0.08}>
-              <h2 className="mt-5 font-display text-[clamp(2rem,4.4vw,3.2rem)] leading-[1.03] text-balance">
+              <h2 className="mt-5 font-display text-[clamp(1.85rem,3.6vw,2.6rem)] leading-[1.06] text-balance">
                 Stated plainly, including the part that is a cost.
               </h2>
             </Reveal>
@@ -441,7 +441,7 @@ export function MilCta() {
           <Eyebrow className="justify-center">Working demo</Eyebrow>
         </Reveal>
         <Reveal delay={0.08}>
-          <h2 className="mt-6 font-display text-[clamp(2.2rem,5.2vw,3.6rem)] leading-[1.02] text-balance">
+          <h2 className="mt-6 font-display text-[clamp(2rem,4vw,2.9rem)] leading-[1.06] text-balance">
             The console is real. Open it.
           </h2>
         </Reveal>

@@ -18,7 +18,7 @@ export function WhyInverted() {
           <Eyebrow>The thesis</Eyebrow>
         </Reveal>
         <Reveal delay={0.08}>
-          <h2 className="mt-5 font-display text-[clamp(2.1rem,4.8vw,3.4rem)] leading-[1.02] text-balance">
+          <h2 className="mt-5 font-display text-[clamp(1.85rem,3.6vw,2.6rem)] leading-[1.06] text-balance">
             Every digital vault before this one was sold to the wrong person.
           </h2>
         </Reveal>
@@ -125,7 +125,7 @@ export function HowItWorks() {
             <Eyebrow>How it works</Eyebrow>
           </Reveal>
           <Reveal delay={0.08}>
-            <h2 className="mt-5 font-display text-[clamp(2.1rem,4.8vw,3.4rem)] leading-[1.02] text-balance">
+            <h2 className="mt-5 font-display text-[clamp(1.85rem,3.6vw,2.6rem)] leading-[1.06] text-balance">
               Three steps, and only one of them is yours to finish.
             </h2>
           </Reveal>
@@ -184,7 +184,7 @@ export function WhatsInside() {
               <Eyebrow>What&apos;s inside</Eyebrow>
             </Reveal>
             <Reveal delay={0.08}>
-              <h2 className="mt-5 font-display text-[clamp(2.1rem,4.8vw,3.2rem)] leading-[1.02] text-balance">
+              <h2 className="mt-5 font-display text-[clamp(1.85rem,3.6vw,2.6rem)] leading-[1.06] text-balance">
                 {/* Counted from the data. A hand-typed number in a headline
                     drifts the first time the record list changes. */}
                 {DEMO_CONSUMER_RECORDS.length} rows, not a filing system.
@@ -245,7 +245,7 @@ export function TheDay() {
           <Eyebrow className="justify-center">The day</Eyebrow>
         </Reveal>
         <Reveal delay={0.08}>
-          <h2 className="mt-6 font-display text-[clamp(2.1rem,5vw,3.4rem)] leading-[1.02] text-balance">
+          <h2 className="mt-6 font-display text-[clamp(1.85rem,3.6vw,2.6rem)] leading-[1.06] text-balance">
             Two people agree, a week passes, and the record opens.
           </h2>
         </Reveal>
@@ -316,7 +316,7 @@ export function WhatWeDont() {
             <Eyebrow>Scope</Eyebrow>
           </Reveal>
           <Reveal delay={0.08}>
-            <h2 className="mt-5 font-display text-[clamp(2.1rem,4.8vw,3.4rem)] leading-[1.02] text-balance">
+            <h2 className="mt-5 font-display text-[clamp(1.85rem,3.6vw,2.6rem)] leading-[1.06] text-balance">
               Four things we removed on purpose.
             </h2>
           </Reveal>
@@ -367,7 +367,7 @@ export function NokCta() {
       />
       <div className="relative mx-auto max-w-2xl px-5 text-center sm:px-8">
         <Reveal>
-          <h2 className="font-display text-[clamp(2.3rem,5.6vw,3.8rem)] leading-[1] text-balance">
+          <h2 className="font-display text-[clamp(2rem,4vw,2.9rem)] leading-[1.06] text-balance">
             Start it yourself. Ask them tomorrow.
           </h2>
         </Reveal>

@@ -1,18 +1,17 @@
-import { Inter, Instrument_Serif, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
 
 /**
- * One font contract, two brands.
+ * One font contract, three surfaces. No serif anywhere.
  *
- * Instrument Serif is the through-line: it marks both surfaces as the same
- * company. Serif reads permanence and inheritance, which a geometric sans
- * cannot do for a product about what outlives you.
+ * The first build used Instrument Serif for display. It was rejected on sight
+ * — read as "Times New Roman", which is fatal for a product that has to look
+ * current. Serif was the wrong call: it signals *archive*, and this product
+ * needs to signal *software*.
  *
- * What differs is DOSAGE, not typeface. The consumer surface uses the serif
- * broadly — headlines, pull quotes, numerals, anywhere warmth helps. NOKM
- * rations it to top-level headlines and display figures only, and hands every
- * label, status and data cell to the mono. That asymmetry is what makes one
- * surface feel like an archive and the other like an instrument, using the
- * same two fonts.
+ * Plus Jakarta Sans carries display. It is geometric enough to look modern at
+ * large sizes but has slightly humanist terminals, so it stays warm next to a
+ * pastel palette instead of going cold and corporate. Inter runs body and UI.
+ * JetBrains Mono is rationed to data cells and micro-labels only.
  */
 export const inter = Inter({
   variable: "--font-inter",
@@ -20,10 +19,10 @@ export const inter = Inter({
   display: "swap",
 });
 
-export const instrumentSerif = Instrument_Serif({
+export const jakarta = Plus_Jakarta_Sans({
   variable: "--font-display",
   subsets: ["latin"],
-  weight: "400",
+  weight: ["600", "700", "800"],
   display: "swap",
 });
 
@@ -33,4 +32,4 @@ export const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
-export const fontVars = `${inter.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable}`;
+export const fontVars = `${inter.variable} ${jakarta.variable} ${jetbrainsMono.variable}`;

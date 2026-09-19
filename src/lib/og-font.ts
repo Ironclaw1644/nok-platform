@@ -1,5 +1,5 @@
 /**
- * Loads Instrument Serif for the social cards.
+ * Loads the display face (Plus Jakarta Sans) for the social cards.
  *
  * Satori (which renders next/og) cannot use next/font or CSS — it needs raw
  * font bytes. So the TTF is fetched at build time from the Google Fonts CSS
@@ -9,10 +9,10 @@
  * deploy over. If the font cannot be fetched the cards render in Satori's
  * default face, which is plain but correct, and the build proceeds.
  */
-export async function instrumentSerifData(): Promise<ArrayBuffer | null> {
+export async function displayFontData(): Promise<ArrayBuffer | null> {
   try {
     const css = await fetch(
-      "https://fonts.googleapis.com/css2?family=Instrument+Serif:wght@400&display=swap",
+      "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700&display=swap",
       {
         headers: {
           // Google serves woff2 to modern UAs and TTF to older ones. Satori

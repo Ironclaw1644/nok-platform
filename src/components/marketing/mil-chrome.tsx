@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion, useMotionValueEvent, useScroll } from "motion/react";
 import { useState } from "react";
 import { ButtonLink, Dot } from "@/components/ui/kit";
+import { VersionSwitch } from "@/components/ui/version-switch";
 import { cn } from "@/lib/utils";
 
 /* Fielded-equipment mark: a bracketed N, like a stencil on a case. */
@@ -61,12 +62,7 @@ export function MilNav() {
         </nav>
 
         <div className="flex items-center gap-3">
-          <Link
-            href="/"
-            className="hidden text-[13px] text-faint transition-colors hover:text-muted sm:block"
-          >
-            Consumer →
-          </Link>
+          <VersionSwitch current="/mil" />
           <ButtonLink href="/mil/console" size="sm" variant="primary">
             Open console
           </ButtonLink>

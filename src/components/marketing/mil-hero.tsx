@@ -52,7 +52,7 @@ export function MilHero() {
           <SplitWords
             as="h1"
             text="The honors he earned run through one document."
-            className="mt-6 max-w-[15ch] font-display text-[clamp(2.6rem,6.2vw,4.6rem)] leading-[0.97] text-balance"
+            className="mt-6 max-w-[19ch] font-display text-[clamp(2.2rem,4.3vw,3.4rem)] leading-[1.04] text-balance"
             delay={0.15}
           />
 

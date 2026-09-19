@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMotionValueEvent, useScroll } from "motion/react";
 import { useState } from "react";
 import { ButtonLink } from "@/components/ui/kit";
+import { VersionSwitch } from "@/components/ui/version-switch";
 import { cn } from "@/lib/utils";
 
 /* The consumer mark: two joined strokes — a line continuing through a break.
@@ -57,12 +58,7 @@ export function NokNav() {
         </nav>
 
         <div className="flex items-center gap-3">
-          <Link
-            href="/mil"
-            className="hidden text-[13px] text-faint transition-colors hover:text-muted sm:block"
-          >
-            Military →
-          </Link>
+          <VersionSwitch current="/" />
           <ButtonLink href="/app" size="sm">
             See the record
           </ButtonLink>
