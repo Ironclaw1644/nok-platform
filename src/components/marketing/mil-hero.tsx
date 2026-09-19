@@ -43,19 +43,26 @@ export function MilHero() {
             <Eyebrow>Survivor readiness infrastructure</Eyebrow>
           </Reveal>
 
+          {/* Claim discipline applies to the headline too. The earlier draft
+              read "Every survivor benefit runs through one document" — which
+              the form audit could not support. Funeral honors and a government
+              headstone ARE both established by the DD 214; the burial flag and
+              national cemetery interment are not documented that way on any
+              official page we read. So the headline says only what is true. */}
           <SplitWords
             as="h1"
-            text="Every survivor benefit runs through one document."
+            text="The honors he earned run through one document."
             className="mt-6 max-w-[15ch] font-display text-[clamp(2.6rem,6.2vw,4.6rem)] leading-[0.97] text-balance"
             delay={0.15}
           />
 
           <Reveal delay={0.55} y={14}>
             <p className="mt-6 max-w-lg text-[15px] leading-relaxed text-muted text-pretty sm:text-base">
-              It is also the one most families end up hunting for during the worst week of
-              their lives — in a filing cabinet, in a storage unit, in a request queue that
-              answers in weeks. NOKM keeps service records verified and current, and turns
-              that week into a single export.
+              Military funeral honors and a government headstone both ask the same question
+              — prove the service — and both accept the same answer. It is also the document
+              most families end up hunting for during the worst week of their lives, in a
+              filing cabinet or a records queue that will not promise a date. NOKM keeps it,
+              and everything beside it, verified and current.
             </p>
           </Reveal>
 
@@ -75,7 +82,13 @@ export function MilHero() {
           <Reveal delay={0.8} y={14}>
             <dl className="mt-12 grid max-w-lg grid-cols-1 gap-px overflow-hidden rounded-[var(--radius-card)] border border-line bg-line sm:grid-cols-3">
               {[
-                { k: "Records tracked", v: "12", s: "per service member" },
+                {
+                  k: "Records tracked",
+                  // Read from the data, so the marketing number cannot drift
+                  // away from the product the way hand-typed figures always do.
+                  v: String(DEMO_MILITARY_RECORDS.length),
+                  s: "per service member",
+                },
                 { k: "Verification", v: "Sourced", s: "every form number cited" },
                 { k: "Export", v: "One packet", s: "for the family and the CAO" },
               ].map((i) => (
@@ -96,8 +109,12 @@ export function MilHero() {
               className="absolute -inset-4 rounded-[24px] opacity-70"
               style={{ background: "radial-gradient(ellipse at 50% 0%, var(--glow), transparent 70%)" }}
             />
+            {/* Full register, seven rows shown. Scoring a slice here would
+                print a different percentage than the console does for the
+                same person. */}
             <ReadinessInstrument
-              records={DEMO_MILITARY_RECORDS.slice(0, 7)}
+              records={DEMO_MILITARY_RECORDS}
+              maxRows={7}
               className="relative"
             />
           </div>

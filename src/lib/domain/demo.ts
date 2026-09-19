@@ -80,15 +80,16 @@ export const DEMO_MILITARY_RECORDS: VaultRecord[] = [
     criticality: "blocking",
     reviewDays: null,
     minTier: 2,
+    // Only claims confirmed against an official source survive here. "Burial
+    // flag" and "national cemetery interment" were in the first draft and were
+    // REMOVED: no VA page read during the audit states a DD 214 requirement for
+    // either. See docs/form-register.md.
     unlocks: [
-      "National Cemetery interment",
       "Government headstone or marker",
-      "Burial flag",
       "Military funeral honors",
-      "VA burial allowance",
     ],
     retrievalPath:
-      "Request from the National Personnel Records Center. Allow weeks, not days — which is why this is retrieved now and not later.",
+      "eVetRecs at the National Archives, or milConnect for recent service. NARA publishes no committed turnaround and asks that you not follow up for 90 days — which is the whole argument for retrieving it now. If a funeral is already scheduled there is an emergency route.",
     note: "Lost in the 2019 move. Never replaced.",
   },
   {
@@ -108,8 +109,11 @@ export const DEMO_MILITARY_RECORDS: VaultRecord[] = [
     note: "Last updated before the divorce and remarriage. Almost certainly names the wrong person.",
   },
   {
-    id: "r-sgli",
-    formKey: "sglv8286",
+    // Deliberately carries NO form key. Marcus is retired, so SGLI has long
+    // since ended and SGLV 8286 would be the wrong citation — his coverage is
+    // the converted veterans' policy. Rather than cite a form number the audit
+    // did not cover, this record cites none.
+    id: "r-life",
     title: "Life insurance election and beneficiaries",
     category: "benefit",
     status: "verified",
@@ -117,7 +121,8 @@ export const DEMO_MILITARY_RECORDS: VaultRecord[] = [
     lastVerified: "2026-06-02",
     reviewDays: 365,
     minTier: 3,
-    unlocks: ["Life insurance payout routing", "Beneficiary split"],
+    unlocks: ["Payout routing", "Beneficiary split as designated, not as remembered"],
+    note: "Converted after separation. The beneficiary named here is the one that pays, whatever the will says.",
   },
   {
     id: "r-sbp",
@@ -129,7 +134,32 @@ export const DEMO_MILITARY_RECORDS: VaultRecord[] = [
     lastVerified: "2023-08-30",
     reviewDays: 730,
     minTier: 3,
-    unlocks: ["Survivor annuity to surviving spouse", "Retired pay records"],
+    unlocks: ["Survivor annuity election", "Retired pay account"],
+    note: "The election is his. Denise's claim to start the annuity is a separate form (DD 2656-7), filed after.",
+  },
+  {
+    id: "r-flag",
+    formKey: "va272008",
+    title: "Burial flag request",
+    category: "benefit",
+    status: "missing",
+    criticality: "standard",
+    minTier: 2,
+    unlocks: ["United States flag for burial purposes"],
+    retrievalPath:
+      "Requested at the time of need, usually by the funeral director. Holding the form number and eligibility here means nobody is searching for it that week.",
+  },
+  {
+    id: "r-vso",
+    formKey: "va2122",
+    title: "VSO representation",
+    category: "benefit",
+    status: "missing",
+    criticality: "high",
+    minTier: 2,
+    unlocks: ["An accredited representative who files the survivor claims"],
+    retrievalPath:
+      "Free, and the single highest-leverage form most families never file. An accredited VSO does the claim work the family would otherwise be doing alone in week two.",
   },
   {
     id: "r-rating",

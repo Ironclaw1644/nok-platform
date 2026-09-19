@@ -57,17 +57,40 @@ function structural(f: FormDefinition) {
   }
 }
 
-async function reachable(f: FormDefinition): Promise<boolean> {
+type Reach = { ok: boolean; detail: string };
+
+async function reachable(f: FormDefinition): Promise<Reach> {
   try {
     const res = await fetch(f.source, {
       method: "GET",
       redirect: "follow",
-      signal: AbortSignal.timeout(15_000),
-      headers: { "user-agent": "nok-form-verifier/1.0" },
+      signal: AbortSignal.timeout(20_000),
+      headers: {
+        // Several .gov hosts (cem.va.gov among them) refuse unfamiliar
+        // user-agents outright — they answer 200 to a browser and hang up on
+        // a bare script UA. Without this the checker reports a live page as
+        // dead, which would train everyone to ignore it.
+        "user-agent":
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0 Safari/537.36",
+        accept: "text/html,application/xhtml+xml,application/pdf,*/*",
+      },
     });
-    return res.ok;
-  } catch {
-    return false;
+    return { ok: res.ok, detail: `HTTP ${res.status}` };
+  } catch (err) {
+    // Distinguish a genuinely dead citation from an environment problem. Some
+    // .gov hosts serve an incomplete TLS chain that browsers repair by
+    // fetching the intermediate via AIA and Node does not — the page is live,
+    // we just cannot see it. Reporting that as "dead link" would send someone
+    // hunting for a replacement citation that does not need replacing.
+    const code =
+      (err as { cause?: { code?: string } })?.cause?.code ?? (err as Error)?.name ?? "unknown";
+    const tls =
+      typeof code === "string" &&
+      /CERT|SIGNATURE|SELF_SIGNED|CHAIN|TLS|ALT_NAME/i.test(code);
+    return {
+      ok: false,
+      detail: tls ? `TLS chain not verifiable by Node (${code}) — page may be live` : String(code),
+    };
   }
 }
 
@@ -88,12 +111,15 @@ for (const f of entries) {
 if (CHECK_NET) {
   console.log(`\n  Resolving sources…\n`);
   const results = await Promise.all(
-    entries.map(async (f) => ({ f, ok: await reachable(f) })),
+    entries.map(async (f) => ({ f, ...(await reachable(f)) })),
   );
-  for (const { f, ok } of results) {
-    if (!ok) problems.push({ key: f.key, issue: `source did not resolve: ${f.source}` });
+  for (const { f, ok, detail } of results) {
+    if (!ok) {
+      problems.push({ key: f.key, issue: `source did not resolve — ${detail}: ${f.source}` });
+    }
     console.log(
-      `  ${ok ? GREEN + "✓" : RED + "✗"}${RESET} ${f.key.padEnd(14)} ${DIM}${f.source}${RESET}`,
+      `  ${ok ? GREEN + "✓" : RED + "✗"}${RESET} ${f.key.padEnd(14)} ${DIM}${f.source}${RESET}` +
+        (ok ? "" : `\n      ${YELLOW}${detail}${RESET}`),
     );
   }
 }

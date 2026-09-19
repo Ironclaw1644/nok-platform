@@ -30,7 +30,7 @@ const TIMELINE = [
   {
     when: "Day 2–3",
     title: "Honors, flag, cemetery",
-    body: "Military funeral honors, the burial flag, a government marker, interment in a national cemetery. Every one of these asks the same question — prove the service — and every one accepts the same answer.",
+    body: "Military funeral honors and a government headstone both ask the same question — prove the service — and both accept the same answer. The burial flag and a place in a national cemetery are separate requests on their own forms, which the family discovers mid-week, one phone call at a time.",
     tone: "warn" as const,
   },
   {

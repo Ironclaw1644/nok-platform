@@ -2,6 +2,7 @@
 
 import { Counter, Parallax, Reveal, Stagger, StaggerItem } from "@/components/motion/primitives";
 import { Badge, ButtonLink, Card, Dot, Eyebrow } from "@/components/ui/kit";
+import { DEMO_CONSUMER_RECORDS } from "@/lib/domain/demo";
 import { cn } from "@/lib/utils";
 
 /* =========================================================================
@@ -184,7 +185,9 @@ export function WhatsInside() {
             </Reveal>
             <Reveal delay={0.08}>
               <h2 className="mt-5 font-display text-[clamp(2.1rem,4.8vw,3.2rem)] leading-[1.02] text-balance">
-                Twelve rows, not a filing system.
+                {/* Counted from the data. A hand-typed number in a headline
+                    drifts the first time the record list changes. */}
+                {DEMO_CONSUMER_RECORDS.length} rows, not a filing system.
               </h2>
             </Reveal>
             <Reveal delay={0.14}>

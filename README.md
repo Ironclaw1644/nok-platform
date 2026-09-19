@@ -151,6 +151,30 @@ never a real document shipped in a product and stayed there for about a year,
 because it looked plausible and nobody had a way to check. A failing check
 beats a confident sentence.
 
+### It already earned its keep
+
+The first audit pass (`docs/form-register.md`, 19 Sep 2026) confirmed all 14
+form numbers — and **killed two benefit claims that were already in the copy**:
+
+- *"DD 214 required for a burial flag"* — the VA burial-flag page describes
+  VA Form 27-2008 and never states a DD 214 requirement. **Unverified.**
+- *"DD 214 required for national cemetery interment"* — no official page read
+  states it. **Unverified.**
+
+Both were removed from the record data and from the marketing copy. The hero
+headline changed from *"Every survivor benefit runs through one document"* to
+*"The honors he earned run through one document"*, because funeral honors and a
+government headstone **are** both established by the DD 214 and the other two
+are not documented that way.
+
+It also caught a domain error: the demo veteran is retired, so SGLI has ended
+and SGLV 8286 was the wrong citation for his life insurance. That record now
+carries no form number at all rather than a plausible wrong one.
+
+Three further claims remain **unpublished** because no official source confirms
+them — most notably any "typical NPRC turnaround" figure. NARA explicitly
+declines to give one, so neither do we.
+
 ---
 
 ## What was cut, and why
@@ -193,8 +217,11 @@ Stated plainly so nobody demos this as finished.
 - **No encryption.** The security model at `/mil#security` describes the
   intended design; `docs/key-escrow.md` specifies it. None of it is implemented.
 - **No passkey enrolment.** The invite flow is a UI demonstration.
-- **No real form verification yet.** All nine register entries are
-  `verified: false` pending the audit recorded in `docs/form-register.md`.
+- **Form register is verified, benefit claims only partly.** All 14 form
+  numbers and titles are confirmed against official sources and
+  `npm run verify:forms -- --net` is green. Several *benefit* claims remain
+  unverified and are therefore absent from the product — see
+  `docs/form-register.md`.
 - **Entity is wrong for raising.** An Alabama Series LLC does not survive
   institutional diligence; conversion to a Delaware C-corp is step one and is
   cheapest before anyone else holds units.
@@ -204,7 +231,7 @@ Stated plainly so nobody demos this as finished.
 ## Next
 
 1. Convert the entity. Nothing else about fundraising matters until this is done.
-2. Finish the form register audit; flip the nine flags; let the check go green.
+2. Close the three open claims in `docs/form-register.md`, or leave them unpublished.
 3. Supabase — Postgres, row-level security, storage. The domain models drop in
    as tables with no reshaping.
 4. Passkey auth (WebAuthn), then client-side envelope encryption per

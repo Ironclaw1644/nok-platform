@@ -43,10 +43,15 @@ export function ReadinessInstrument({
   animate = true,
   label = "Survivor readiness",
   register = "military",
+  maxRows,
 }: {
   records: VaultRecord[];
   className?: string;
   animate?: boolean;
+  /** Cap the visible rows WITHOUT changing the score. Scoring a slice would
+   *  make the marketing card and the console disagree about the same person,
+   *  which reads as a bug and undermines the one number the product sells. */
+  maxRows?: number;
   /** NOKM reads "survivor readiness"; the consumer surface says something a
    *  daughter would say out loud. Same instrument, different register. */
   label?: string;
@@ -67,6 +72,11 @@ export function ReadinessInstrument({
   const still = reduce || !animate;
   const shown = still ? target : shownRaw;
   const revealed = still ? records.length : revealedRaw;
+
+  // Rows are truncated for display only. The score above always reflects the
+  // full register.
+  const visible = maxRows ? records.slice(0, maxRows) : records;
+  const hidden = records.length - visible.length;
 
   useEffect(() => {
     if (!inView || reduce || !animate) return;
@@ -186,7 +196,7 @@ export function ReadinessInstrument({
       <p className="relative mt-3 text-[13px] leading-relaxed text-muted">{verdict.detail}</p>
 
       <div className="relative mt-5 space-y-px">
-        {records.map((r, i) => {
+        {visible.map((r, i) => {
           const status = effectiveStatus(r);
           const ready = isReady(r);
           const tone =
@@ -227,6 +237,12 @@ export function ReadinessInstrument({
             </motion.div>
           );
         })}
+
+        {hidden > 0 && (
+          <div className="pt-2.5 text-[11.5px] text-faint">
+            + {hidden} more record{hidden === 1 ? "" : "s"}, all counted in the score above
+          </div>
+        )}
       </div>
 
       {breakdown.gaps.length > 0 && (
