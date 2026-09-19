@@ -92,11 +92,19 @@ noise on every field.
   work, and it is the foundation the encryption model sits on.
 - **No encryption.** `docs/key-escrow.md` specifies it properly, including what
   it deliberately cannot protect against. None of it is implemented.
-- **Intake has no UI path to the live route yet.** The extraction and citation
-  functions are written and typed; the panel still runs its scripted sequence
-  because accepting file uploads from the public internet needs the size,
-  type and content limits designed first.
+Order I would build them: passkeys, then persistence, then encryption.
+That order is not negotiable — encryption before auth is a foundation on sand.
 
-Order I would build them: passkeys, then persistence, then encryption, then
-live intake. That order is not negotiable — encryption before auth is a
-foundation on sand.
+## Live intake is wired
+
+Once the key is set, the intake panel grows an **Upload a real document**
+option above the three samples. PDF or photo, 5 MB ceiling, allow-list on
+content type, held in memory for one request and written nowhere — this
+endpoint has no storage by design.
+
+On a PDF, every extracted field gets a **"where did you read that?"** link.
+That runs the citations pass and returns the model's answer plus the exact
+quoted source text and page number.
+
+That is the moment worth showing. Not *"the beneficiary is Denise Ellison"* but
+*"page 3 says so, and here is the line."*

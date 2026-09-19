@@ -1,34 +1,37 @@
 "use client";
 
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useHydrated } from "@/components/motion/primitives";
 import { Badge, Button, Dot } from "@/components/ui/kit";
 import { FORMS } from "@/lib/domain/forms";
 import { cn } from "@/lib/utils";
 
 /* ---------------------------------------------------------------------------
-   AI document intake.
+   AI document intake. docs/ai.md §1.
 
-   The highest-value AI surface in the product and the lowest-risk one: it
-   classifies and extracts, it does not advise. See docs/ai.md §1.
+   Two paths, and the badge always tells you which one you are on:
 
-   SCRIPTED, NOT LIVE. No model is called and nothing leaves the browser. The
-   flow demonstrates the interaction and the shape of the output; it is not
-   evidence that extraction works. The UI says so, because a demo that quietly
-   implies a working model is the kind of thing that gets repeated in a room
-   as if it were true.
+   SCRIPTED — three canned samples. Always available, works with no key, and
+   is what the walkthrough uses so it cannot fail in front of an audience.
+
+   LIVE — appears only when ANTHROPIC_API_KEY is configured. Upload a real
+   document and Claude Opus 5 classifies it, extracts the fields, and files it.
+   On a PDF you can then ask "where did you read that?" and get the exact
+   quoted source text and page number back.
+
+   A demo that implies a working model when it is scripted is the kind of thing
+   that gets repeated in a room as fact and then has to be walked back. Hence
+   the badge, and hence it is driven by the server rather than by a prop.
 ------------------------------------------------------------------------- */
 
 interface Sample {
   id: string;
   label: string;
-  /** What the classifier "returns". */
   classified: string;
   formKey?: string;
   fields: { k: string; v: string }[];
   reviewDays: number | null;
-  /** The genuinely useful part: something a human would have missed. */
   flag?: string;
 }
 
@@ -81,6 +84,16 @@ const STEPS = [
   "Filing and setting review clock",
 ];
 
+interface Result {
+  classified: string;
+  formNumber: string | null;
+  fields: { k: string; v: string; confidence?: string }[];
+  reviewDays: number | null;
+  flags: string[];
+  canCite: boolean;
+  live: boolean;
+}
+
 export function AiIntake({
   onFiled,
   className,
@@ -94,68 +107,184 @@ export function AiIntake({
   const hydrated = useHydrated();
   const reduce = prefersReduce && hydrated;
 
-  const [picked, setPicked] = useState<Sample | null>(null);
+  const [liveAvailable, setLiveAvailable] = useState(false);
   const [step, setStep] = useState(-1);
-  const [done, setDone] = useState(false);
+  const [result, setResult] = useState<Result | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
+  // Citations
+  const fileRef = useRef<File | null>(null);
+  const [citing, setCiting] = useState<string | null>(null);
+  const [citation, setCitation] = useState<{ answer: string; quotes: { text: string; page: number | null }[] } | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/ai/status")
+      .then((r) => r.json())
+      .then((j) => !cancelled && setLiveAvailable(Boolean(j?.live)))
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Step ticker drives the scripted path and also paces the live one, so the
+  // two feel identical to watch.
   useEffect(() => {
     if (step < 0 || step >= STEPS.length) return;
     const t = window.setTimeout(() => setStep((s) => s + 1), reduce ? 70 : 620);
     return () => window.clearTimeout(t);
   }, [step, reduce]);
 
-  useEffect(() => {
-    if (step === STEPS.length) {
-      const t = window.setTimeout(() => setDone(true), reduce ? 60 : 320);
-      return () => window.clearTimeout(t);
-    }
-  }, [step, reduce]);
-
-  function pick(s: Sample) {
-    setPicked(s);
-    setDone(false);
+  function runScripted(s: Sample) {
+    fileRef.current = null;
+    setError(null);
+    setCitation(null);
     setStep(0);
+    const total = reduce ? 400 : STEPS.length * 620 + 320;
+    window.setTimeout(() => {
+      setResult({
+        classified: s.classified,
+        formNumber: s.formKey ? FORMS[s.formKey]?.number ?? null : null,
+        fields: s.fields,
+        reviewDays: s.reviewDays,
+        flags: s.flag ? [s.flag] : [],
+        canCite: false,
+        live: false,
+      });
+    }, total);
+  }
+
+  async function runLive(file: File) {
+    fileRef.current = file;
+    setError(null);
+    setCitation(null);
+    setBusy(true);
+    setStep(0);
+    try {
+      const body = new FormData();
+      body.append("file", file);
+      const res = await fetch("/api/ai/intake", { method: "POST", body });
+      const j = await res.json();
+
+      if (!j?.live) {
+        setError(
+          j?.reason === "not_configured"
+            ? "The live model is not configured. The sample documents still work."
+            : typeof j?.reason === "string"
+              ? j.reason
+              : "That did not work. The sample documents still do.",
+        );
+        setStep(-1);
+        return;
+      }
+
+      setResult({
+        classified: j.documentType,
+        formNumber: j.form?.number ?? null,
+        fields: (j.fields ?? []).map((f: { label: string; value: string; confidence: string }) => ({
+          k: f.label,
+          v: f.value,
+          confidence: f.confidence,
+        })),
+        reviewDays: j.reviewDays ?? null,
+        flags: j.flags ?? [],
+        canCite: Boolean(j.canCite),
+        live: true,
+      });
+    } catch {
+      setError("That did not work. The sample documents still do.");
+      setStep(-1);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function askWhere(label: string) {
+    if (!fileRef.current) return;
+    setCiting(label);
+    setCitation(null);
+    try {
+      const body = new FormData();
+      body.append("file", fileRef.current);
+      body.append("question", `Where in this document does it state the ${label}? Quote it.`);
+      const res = await fetch("/api/ai/cite", { method: "POST", body });
+      const j = await res.json();
+      if (j?.live) {
+        setCitation({
+          answer: j.answer,
+          quotes: (j.citations ?? []).map((c: { quotedText: string; page: number | null }) => ({
+            text: c.quotedText,
+            page: c.page,
+          })),
+        });
+      }
+    } catch {
+      /* leave the field as it was */
+    } finally {
+      setCiting(null);
+    }
   }
 
   function reset() {
-    setPicked(null);
     setStep(-1);
-    setDone(false);
+    setResult(null);
+    setError(null);
+    setCitation(null);
+    fileRef.current = null;
   }
 
-  const form = picked?.formKey ? FORMS[picked.formKey] : undefined;
+  const scanning = step >= 0 && !result;
 
   return (
     <div className={cn("surface-card overflow-hidden", className)}>
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line px-5 py-3.5">
         <div className="label-micro">Add a document</div>
-        <Badge tone="neutral">Scripted demo · no model is called</Badge>
+        <Badge tone={result?.live ? "accent" : "neutral"}>
+          {result?.live ? "Claude Opus 5 · live" : liveAvailable ? "Live model available" : "Scripted demo"}
+        </Badge>
       </div>
 
       <AnimatePresence mode="wait">
-        {!picked && (
-          <motion.div
-            key="pick"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="space-y-4 p-5"
-          >
+        {step < 0 && !result && (
+          <motion.div key="pick" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4 p-5">
             <p className="text-[14px] leading-relaxed text-muted">
               Photograph it or drop the file in. It gets identified, filed and put on a
               re-check schedule — so nobody types anything.
             </p>
+
+            {liveAvailable && (
+              <label className="flex cursor-pointer items-center gap-3 rounded-[var(--radius-field)] border border-accent bg-accent-soft/40 px-4 py-3.5 transition-colors duration-200 hover:bg-accent-soft">
+                <span aria-hidden className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[8px] bg-accent text-[15px] text-accent-ink">
+                  ↑
+                </span>
+                <span className="flex-1">
+                  <span className="block text-[13.5px] text-ink">Upload a real document</span>
+                  <span className="block text-[11.5px] text-muted">PDF or photo, up to 5 MB. Never stored.</span>
+                </span>
+                <input
+                  type="file"
+                  accept="application/pdf,image/jpeg,image/png,image/webp"
+                  className="sr-only"
+                  disabled={busy}
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) runLive(f);
+                    e.target.value = "";
+                  }}
+                />
+              </label>
+            )}
+
             <div className="space-y-2">
               {SAMPLES.map((s) => (
                 <button
                   key={s.id}
-                  onClick={() => pick(s)}
+                  onClick={() => runScripted(s)}
                   className="flex w-full items-center gap-3 rounded-[var(--radius-field)] border border-dashed border-line-strong px-4 py-3.5 text-left transition-colors duration-200 hover:border-accent hover:bg-accent-soft/40"
                 >
-                  <span
-                    aria-hidden
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[8px] bg-elevated text-[15px] text-faint"
-                  >
+                  <span aria-hidden className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[8px] bg-elevated text-[15px] text-faint">
                     ↑
                   </span>
                   <span className="flex-1 text-[13.5px] text-ink">{s.label}</span>
@@ -163,26 +292,21 @@ export function AiIntake({
                 </button>
               ))}
             </div>
+
+            {error && (
+              <div className="rounded-[var(--radius-field)] border border-warn/30 bg-warn/6 p-3.5">
+                <p className="text-[13px] leading-relaxed text-ink">{error}</p>
+              </div>
+            )}
           </motion.div>
         )}
 
-        {picked && !done && (
-          <motion.div
-            key="scan"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="p-5"
-          >
+        {scanning && (
+          <motion.div key="scan" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="p-5">
             <div className="relative mb-5 h-28 overflow-hidden rounded-[var(--radius-field)] border border-line bg-elevated">
-              {/* document lines */}
               <div className="space-y-2 p-4" aria-hidden>
                 {[92, 74, 84, 61, 78].map((w, i) => (
-                  <div
-                    key={i}
-                    className="h-1.5 rounded-full bg-line-strong/60"
-                    style={{ width: `${w}%` }}
-                  />
+                  <div key={i} className="h-1.5 rounded-full bg-line-strong/60" style={{ width: `${w}%` }} />
                 ))}
               </div>
               {!reduce && (
@@ -193,25 +317,13 @@ export function AiIntake({
                 />
               )}
             </div>
-
             <ul className="space-y-2.5">
               {STEPS.map((s, i) => (
                 <li key={s} className="flex items-center gap-3">
                   <span className="w-5 shrink-0">
-                    {i < step ? (
-                      <Dot tone="ok" />
-                    ) : i === step ? (
-                      <Dot tone="accent" pulse />
-                    ) : (
-                      <Dot tone="neutral" />
-                    )}
+                    {i < step ? <Dot tone="ok" /> : i === step ? <Dot tone="accent" pulse /> : <Dot tone="neutral" />}
                   </span>
-                  <span
-                    className={cn(
-                      "font-mono text-[12px] transition-colors duration-300",
-                      i < step ? "text-muted" : i === step ? "text-ink" : "text-faint",
-                    )}
-                  >
+                  <span className={cn("font-mono text-[12px] transition-colors duration-300", i < step ? "text-muted" : i === step ? "text-ink" : "text-faint")}>
                     {s}
                   </span>
                 </li>
@@ -220,7 +332,7 @@ export function AiIntake({
           </motion.div>
         )}
 
-        {picked && done && (
+        {result && (
           <motion.div
             key="result"
             initial={reduce ? false : { opacity: 0, y: 10 }}
@@ -230,32 +342,67 @@ export function AiIntake({
             <div className="flex items-start gap-2.5">
               <Dot tone="ok" />
               <div className="-mt-1 min-w-0">
-                <p className="text-[14px] font-medium text-ink">{picked.classified}</p>
-                {form && (
-                  <p className="mt-0.5 font-mono text-[11.5px] text-muted">{form.number}</p>
+                <p className="text-[14px] font-medium text-ink">{result.classified}</p>
+                {result.formNumber && (
+                  <p className="mt-0.5 font-mono text-[11.5px] text-muted">{result.formNumber}</p>
                 )}
               </div>
             </div>
 
             <dl className="divide-y divide-line rounded-[var(--radius-field)] border border-line">
-              {picked.fields.map((f) => (
-                <div key={f.k} className="flex items-baseline justify-between gap-4 px-3.5 py-2.5">
-                  <dt className="label-micro shrink-0">{f.k}</dt>
-                  <dd className="text-right text-[13px] text-ink">{f.v}</dd>
+              {result.fields.map((f) => (
+                <div key={f.k} className="px-3.5 py-2.5">
+                  <div className="flex items-baseline justify-between gap-4">
+                    <dt className="label-micro shrink-0">{f.k}</dt>
+                    <dd className="text-right text-[13px] text-ink">{f.v}</dd>
+                  </div>
+                  <div className="mt-1 flex items-center justify-between gap-3">
+                    {f.confidence && f.confidence !== "high" ? (
+                      <span className="text-[11px] text-warn">{f.confidence} confidence</span>
+                    ) : (
+                      <span />
+                    )}
+                    {result.canCite && (
+                      <button
+                        onClick={() => askWhere(f.k)}
+                        disabled={citing !== null}
+                        className="shrink-0 text-[11.5px] text-accent underline-offset-4 hover:underline disabled:opacity-50"
+                      >
+                        {citing === f.k ? "reading…" : "where did you read that?"}
+                      </button>
+                    )}
+                  </div>
                 </div>
               ))}
             </dl>
 
-            {picked.flag && (
-              <div className="rounded-[var(--radius-field)] border border-warn/30 bg-warn/6 p-3.5">
-                <div className="label-micro text-warn">Flagged</div>
-                <p className="mt-1.5 text-[13px] leading-relaxed text-ink">{picked.flag}</p>
-              </div>
+            {citation && (
+              <motion.div
+                initial={reduce ? false : { opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="rounded-[var(--radius-field)] border border-accent/30 bg-accent-soft/40 p-3.5"
+              >
+                <div className="label-micro text-accent">From the document</div>
+                <p className="mt-1.5 text-[13px] leading-relaxed text-ink">{citation.answer}</p>
+                {citation.quotes.map((q, i) => (
+                  <blockquote key={i} className="mt-2.5 border-l-2 border-accent pl-3">
+                    <p className="text-[12.5px] italic leading-relaxed text-muted">“{q.text}”</p>
+                    {q.page !== null && <p className="mt-1 label-micro">page {q.page}</p>}
+                  </blockquote>
+                ))}
+              </motion.div>
             )}
 
+            {result.flags.map((flag) => (
+              <div key={flag} className="rounded-[var(--radius-field)] border border-warn/30 bg-warn/6 p-3.5">
+                <div className="label-micro text-warn">Flagged</div>
+                <p className="mt-1.5 text-[13px] leading-relaxed text-ink">{flag}</p>
+              </div>
+            ))}
+
             <p className="text-[12.5px] text-faint">
-              {picked.reviewDays
-                ? `Re-check scheduled in ${picked.reviewDays} days.`
+              {result.reviewDays
+                ? `Re-check scheduled in ${result.reviewDays} days.`
                 : "No expiry — this one does not go stale."}
             </p>
 
@@ -263,7 +410,7 @@ export function AiIntake({
               <Button
                 size="sm"
                 onClick={() => {
-                  onFiled?.(picked.classified);
+                  onFiled?.(result.classified);
                   reset();
                 }}
               >
