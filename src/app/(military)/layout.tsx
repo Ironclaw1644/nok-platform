@@ -14,6 +14,7 @@ import "../globals.css";
  * crossing between /  and /mil, which is correct — they are two products.
  */
 export const metadata: Metadata = {
+  robots: { index: false, follow: false },
   title: {
     default: "NOKM — Survivor Readiness Infrastructure",
     template: "%s · NOKM",
