@@ -118,7 +118,7 @@ export default function GuidePage() {
           </Reveal>
           <Reveal delay={0.08}>
             <h1 className="mt-5 font-display text-[clamp(2rem,5vw,3.1rem)] leading-[1.04] text-balance">
-              Three versions of the app. All of them work.
+              Three versions of the app, side by side.
             </h1>
           </Reveal>
           <div className="mt-7 max-w-2xl space-y-4 text-[16.5px] leading-relaxed text-muted text-pretty">
@@ -132,8 +132,8 @@ export default function GuidePage() {
             </Reveal>
             <Reveal delay={0.16}>
               <p>
-                There are three versions because there were three reasonable ways to build
-                it. Rather than argue about which, all three are here to click through.
+                There are three versions because there were three good ways to build it.
+                All three are here to click through.
               </p>
             </Reveal>
           </div>
@@ -308,7 +308,7 @@ export default function GuidePage() {
         <section className="border-t border-line py-16 sm:py-20">
           <Reveal>
             <h2 className="font-display text-[clamp(1.5rem,3vw,2rem)] leading-[1.1] text-balance">
-              Lost? Every page has a menu with all three versions in it.
+              Every page has a menu with all three versions in it.
             </h2>
           </Reveal>
           <Reveal delay={0.08}>
