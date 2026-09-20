@@ -106,6 +106,14 @@ export function SiteNav({
                 {v.label}
               </Link>
             ))}
+            {/* Anyone who arrived on a bare link and does not know what they
+                are looking at needs one reliable way back to the beginning. */}
+            <Link
+              href="/guide"
+              className="text-[13.5px] text-accent transition-opacity duration-200 hover:opacity-75"
+            >
+              Start here
+            </Link>
           </nav>
 
           <div className="flex shrink-0 items-center gap-2">
@@ -178,6 +186,19 @@ export function SiteNav({
                     </a>
                   </li>
                 ))}
+              </ul>
+
+              <div className="label-micro mt-7">New here</div>
+              <ul className="mt-3 space-y-0.5">
+                <li>
+                  <Link
+                    href="/guide"
+                    onClick={() => setOpen(false)}
+                    className="block rounded-[var(--radius-field)] px-3 py-2.5 text-[15px] text-accent transition-colors duration-150 hover:bg-elevated"
+                  >
+                    Start here — what this is and what to press
+                  </Link>
+                </li>
               </ul>
 
               <div className="label-micro mt-7">The three versions</div>
