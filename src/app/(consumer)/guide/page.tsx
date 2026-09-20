@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Reveal } from "@/components/motion/primitives";
 import { NokFooter, NokMark } from "@/components/marketing/nok-chrome";
+import { VersionBar } from "@/components/marketing/version-bar";
 import { ButtonLink, Eyebrow } from "@/components/ui/kit";
+import { Sparkle } from "@/components/ui/ai-badge";
 
 /* ---------------------------------------------------------------------------
    The entry page. This is the URL to send someone.
@@ -56,6 +58,24 @@ const VERSIONS = [
   },
 ] as const;
 
+const AI_USES = [
+  {
+    t: "It reads the document so nobody types it in",
+    d: "Photograph a policy or a discharge certificate. It works out what the document is, pulls the dates, beneficiaries and claim numbers out of it, files it in the right row and sets its re-check date.",
+    where: "Try it on “Add a document” in either app — three samples, or upload a real PDF.",
+  },
+  {
+    t: "It reads your documents against each other",
+    d: "Nobody reads twelve documents side by side. This does, and reports only where two of them disagree — a policy that overrides a will, a form still naming an ex-spouse, an executor nobody ever invited.",
+    where: "This is step three above, and it is the one worth the forty seconds.",
+  },
+  {
+    t: "It shows you where it read that",
+    d: "Every field it pulls out can be challenged. Ask where a name came from and it quotes the line back with the page number it found it on.",
+    where: "Upload a PDF on “Add a document”, then press “where did you read that?” on any field.",
+  },
+] as const;
+
 interface TourStep {
   step: string;
   time: string;
@@ -101,6 +121,7 @@ const TOUR: TourStep[] = [
 export default function GuidePage() {
   return (
     <>
+      <VersionBar current="/guide" />
       <header className="sticky top-0 z-50 border-b border-line bg-bg/90 backdrop-blur-xl">
         <div className="mx-auto flex h-[64px] max-w-4xl items-center justify-between gap-4 px-5 sm:px-8">
           <Link href="/guide">
@@ -197,6 +218,62 @@ export default function GuidePage() {
               Step three is the one worth waiting for. Everywhere else on this site the
               speed is a design choice; there, the wait is a real model reading real
               contradictions between fourteen documents and writing them up.
+            </p>
+          </Reveal>
+        </section>
+
+        {/* --- Where the AI comes in ---------------------------------------- */}
+        <section id="ai" className="scroll-mt-20 border-t border-line py-16 sm:py-20">
+          <Reveal>
+            <Eyebrow>
+              <span className="inline-flex items-center gap-1.5">
+                <Sparkle className="h-3 w-3" />
+                Where the AI comes in
+              </span>
+            </Eyebrow>
+          </Reveal>
+          <Reveal delay={0.08}>
+            <h2 className="mt-5 font-display text-[clamp(1.6rem,3.2vw,2.2rem)] leading-[1.1] text-balance">
+              Three jobs, and you can watch all three.
+            </h2>
+          </Reveal>
+          <Reveal delay={0.12}>
+            <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-muted text-pretty">
+              Anywhere a sparkle mark appears, a model did the work. A filled{" "}
+              <span className="text-ink">AI</span> means it ran for real; an outlined{" "}
+              <span className="text-ink">Example</span> means you are looking at a
+              prepared sample.
+            </p>
+          </Reveal>
+
+          <div className="mt-9 space-y-px overflow-hidden rounded-[var(--radius-card)] border border-line bg-line">
+            {AI_USES.map((u, i) => (
+              <div key={u.t} className="bg-surface p-6 sm:p-7">
+                <Reveal delay={0.14 + i * 0.06}>
+                  <div className="flex items-baseline gap-3">
+                    <span className="font-mono text-[11px] text-faint">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <h3 className="font-display text-[19px] leading-snug text-ink">
+                      {u.t}
+                    </h3>
+                  </div>
+                  <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-muted text-pretty">
+                    {u.d}
+                  </p>
+                  <p className="mt-2.5 max-w-xl text-[13.5px] leading-relaxed text-faint text-pretty">
+                    {u.where}
+                  </p>
+                </Reveal>
+              </div>
+            ))}
+          </div>
+
+          <Reveal delay={0.34}>
+            <p className="mt-6 max-w-2xl text-[13.5px] leading-relaxed text-faint">
+              It will not write a will, decide which of two conflicting documents is
+              right, or tell anyone what they are entitled to. Those are decisions for a
+              lawyer or an agency, and the model is held behind that line on purpose.
             </p>
           </Reveal>
         </section>

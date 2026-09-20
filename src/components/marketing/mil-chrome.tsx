@@ -26,6 +26,7 @@ export function NokmMark({ className }: { className?: string }) {
 const NAV = [
   { href: "#gap", label: "The gap" },
   { href: "#system", label: "System" },
+  { href: "#ai", label: "What the AI does" },
   { href: "#scale", label: "At scale" },
   { href: "#security", label: "Security" },
   { href: "/pricing", label: "Pricing" },

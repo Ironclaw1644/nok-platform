@@ -22,6 +22,7 @@ const NAV = [
   { href: "#why", label: "Why it starts with you" },
   { href: "#how", label: "How it works" },
   { href: "#inside", label: "What's inside" },
+  { href: "#ai", label: "What the AI does" },
   { href: "/pricing", label: "Pricing" },
 ];
 
