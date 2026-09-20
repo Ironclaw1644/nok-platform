@@ -28,14 +28,17 @@ export function VersionBar({
   current: "/plan" | "/" | "/mil" | "/guide";
 }) {
   return (
-    <div className="border-b border-line bg-surface">
+    /* The whole bar is the landmark, not just the links inside it: axe flagged
+       the "switch version" label as content outside any region, because a nav
+       nested in a plain div leaves its siblings homeless. */
+    <nav aria-label="Mockup versions" className="border-b border-line bg-surface">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-2 px-5 py-2.5 sm:px-8">
         <span className="label-micro shrink-0">
           <span className="hidden sm:inline">Mockup · switch version</span>
           <span className="sm:hidden">Versions</span>
         </span>
 
-        <nav aria-label="Switch version" className="flex flex-wrap items-center gap-1.5">
+        <div className="flex flex-wrap items-center gap-1.5">
           {VERSIONS.map((v) => {
             const active = v.href === current;
             return (
@@ -56,7 +59,7 @@ export function VersionBar({
               </Link>
             );
           })}
-        </nav>
+        </div>
 
         {current !== "/guide" && (
           <Link
@@ -67,6 +70,6 @@ export function VersionBar({
           </Link>
         )}
       </div>
-    </div>
+    </nav>
   );
 }
