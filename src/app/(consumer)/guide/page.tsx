@@ -162,9 +162,11 @@ export default function GuidePage() {
           </Reveal>
 
           <ol className="mt-10 space-y-px overflow-hidden rounded-[var(--radius-card)] border border-line bg-line">
+            {/* Reveal renders a div, so it has to go INSIDE the li — wrapping
+                the li broke ol > li and axe caught it as a list violation. */}
             {TOUR.map((t, i) => (
-              <Reveal key={t.step} delay={0.1 + i * 0.06}>
-                <li className="bg-surface p-6 sm:p-7">
+              <li key={t.step} className="bg-surface p-6 sm:p-7">
+                <Reveal delay={0.1 + i * 0.06}>
                   <div className="flex flex-wrap items-center gap-3">
                     <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent-soft font-mono text-[12px] text-accent">
                       {t.step}
@@ -185,8 +187,8 @@ export default function GuidePage() {
                   >
                     {t.cta}
                   </ButtonLink>
-                </li>
-              </Reveal>
+                </Reveal>
+              </li>
             ))}
           </ol>
 
